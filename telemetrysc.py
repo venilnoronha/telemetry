@@ -1,7 +1,18 @@
-from modelpy.model import *
 __author__ = 'paul'
+from modelpy.model import *
+import kivy
+kivy.require('1.0.6')
+
+from kivy.app import App
+from kivy.uix.label import Label
 """
 main entry point to our program.
 """
-print("hello USC!")
-print(AllTheData.datalist);
+class MyApp(App):
+
+    def build(self):
+        return Label(text='Hello USC')
+
+
+if __name__ == '__main__':
+    MyApp().run()
