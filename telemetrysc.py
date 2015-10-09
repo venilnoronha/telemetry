@@ -4,14 +4,29 @@ import kivy
 kivy.require('1.0.6')
 
 from kivy.app import App
-from kivy.uix.label import Label
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.button import Button
+from kivy.uix.stacklayout import StackLayout
 """
 main entry point to our program.
 """
 class MyApp(App):
 
     def build(self):
-        return Label(text='Hello USC')
+        graphratio = .7
+
+        mainview = BoxLayout(orientation='horizontal')
+
+        tempbutt2 = Button(text='graphview here', size_hint=(graphratio, 1))
+        quickviewpanel = StackLayout(size_hint=(1-graphratio, 1))
+        quickviewpanel.padding=[15,15,15,15]
+        for i in range(12):
+            tempbutt = Button(text='quickview', size_hint=(.3, None), height=64)
+            quickviewpanel.add_widget(tempbutt)
+
+        mainview.add_widget(quickviewpanel)
+        mainview.add_widget(tempbutt2)
+        return mainview
 
 
 if __name__ == '__main__':
