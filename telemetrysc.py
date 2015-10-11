@@ -7,6 +7,7 @@ from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.stacklayout import StackLayout
+from scui.custombuttons import QuickViewButton
 """
 main entry point to our program.
 """
@@ -21,7 +22,7 @@ class MyApp(App):
         quickviewpanel = StackLayout(size_hint=(1-graphratio, 1))
         quickviewpanel.padding=[15,15,15,15]
         for i in range(12):
-            tempbutt = Button(text='quickview', size_hint=(.3, None), height=64)
+            tempbutt = QuickViewButton()
             quickviewpanel.add_widget(tempbutt)
 
         mainview.add_widget(quickviewpanel)
