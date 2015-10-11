@@ -10,6 +10,6 @@ class QuickViewButton(Button):
 
     def __init__(self):
         #python inheritance syntax is so wonky...
-        super(Button, self).__init__(text='quickview', size_hint=(.3, None), height=64)
+        super(Button, self).__init__(text='view', size_hint=(.3, None), height=64)
         self.background_color=safecol
         return
