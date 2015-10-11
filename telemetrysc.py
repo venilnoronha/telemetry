@@ -19,7 +19,6 @@ class MyApp(App):
         graphratio = .7
 
         mainview = BoxLayout(orientation='horizontal')
-        tempbutt2 = Button(text='graphview here', size_hint=(graphratio, 1))
         quickviewpanel = StackLayout(size_hint=(1-graphratio, 1))
         quickviewpanel.padding=[15,15,15,15]
         for i in range(12):
