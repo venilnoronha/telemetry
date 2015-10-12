@@ -12,6 +12,11 @@ class QuickViewButton(Button):
         #python inheritance syntax is so wonky...
         super(Button, self).__init__(size_hint=(.3, None))
         self.datam = datamodel
-        self.text = self.datam.name
+        self.text = self.getPrettyText()
+        self.halign = 'center'
         self.background_color=safecol
+        self.markup = True
         return
+
+    def getPrettyText(self):
+        return self.datam.name+'\n[b]'+self.datam.getQuickText()+'[/b]'

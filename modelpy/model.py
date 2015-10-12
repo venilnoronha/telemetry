@@ -7,19 +7,24 @@ class SuperDataModel:
     base class for all the data that we'll be displaying.
     """
     def __init__(self, name):
-        self.name = name;
+        self.name = name
+        self.unit = 'Undef'
+        self.val = float("-inf")
         return
     def getCurrentVal(self):
-        return float("-inf")
+        return self.val
 
     def getUnit(self):
-        return "Undefined"
+        return self.unit
 
     def getHistory(self):
         return None;
 
     def getHazardRanges(self):
         return None;
+
+    def getQuickText(self):
+        return str(self.val) + ' ' + str(self.unit)
 
 class TemperatureModel(SuperDataModel):
     """

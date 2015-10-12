@@ -7,7 +7,7 @@ from math import sin
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
-from kivy.uix.stacklayout import StackLayout
+from kivy.uix.gridlayout import GridLayout
 from scui.custombuttons import QuickViewButton
 from graphlib import Graph, MeshLinePlot
 from modelpy import model
@@ -18,12 +18,15 @@ class MyApp(App):
 
     def build(self):
         graphratio = .7
+        buttonpadding = 10
+        quickviewcols = 2
 
         mainview = BoxLayout(orientation='horizontal')
-        quickviewpanel = StackLayout(size_hint=(1-graphratio, 1))
-        quickviewpanel.padding=[15,15,15,15]
-        for mod in model.AllTheData.datalist.keys():
-            tempbutt = QuickViewButton(model.AllTheData.datalist.get(mod))
+        quickviewpanel = GridLayout(cols=quickviewcols,size_hint=(1-graphratio, 1))
+        quickviewpanel.padding=[buttonpadding,buttonpadding,buttonpadding,buttonpadding]
+        ddmodel = model.AllTheData.datalist
+        for mod in ddmodel.keys():
+            tempbutt = QuickViewButton(ddmodel.get(mod))
             quickviewpanel.add_widget(tempbutt)
 
         mainview.add_widget(quickviewpanel)
