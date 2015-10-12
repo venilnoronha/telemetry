@@ -10,6 +10,7 @@ from kivy.uix.button import Button
 from kivy.uix.stacklayout import StackLayout
 from scui.custombuttons import QuickViewButton
 from graphlib import Graph, MeshLinePlot
+from modelpy import model
 """
 main entry point to our program.
 """
@@ -21,8 +22,8 @@ class MyApp(App):
         mainview = BoxLayout(orientation='horizontal')
         quickviewpanel = StackLayout(size_hint=(1-graphratio, 1))
         quickviewpanel.padding=[15,15,15,15]
-        for i in range(12):
-            tempbutt = QuickViewButton()
+        for mod in model.AllTheData.datalist.keys():
+            tempbutt = QuickViewButton(model.AllTheData.datalist.get(mod))
             quickviewpanel.add_widget(tempbutt)
 
         mainview.add_widget(quickviewpanel)

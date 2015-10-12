@@ -8,8 +8,10 @@ cautioncol = [1,1,0,1]
 
 class QuickViewButton(Button):
 
-    def __init__(self):
+    def __init__(self, datamodel):
         #python inheritance syntax is so wonky...
-        super(Button, self).__init__(text='view', size_hint=(.3, None), height=64)
+        super(Button, self).__init__(size_hint=(.3, None))
+        self.datam = datamodel
+        self.text = self.datam.name
         self.background_color=safecol
         return

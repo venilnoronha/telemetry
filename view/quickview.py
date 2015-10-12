@@ -6,6 +6,6 @@ class Quickview:
     should only contain the data's value/unit, and a color for its current status.
     """
     #Setting a initial object to datam first
-    datam = SuperDataModel();
-    def __init__(self):
+    def __init__(self, datamodel):
+
         print("starting view")

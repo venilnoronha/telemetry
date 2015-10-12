@@ -6,7 +6,8 @@ class SuperDataModel:
     """
     base class for all the data that we'll be displaying.
     """
-    def __init__(self):
+    def __init__(self, name):
+        self.name = name;
         return
     def getCurrentVal(self):
         return float("-inf")
@@ -24,8 +25,7 @@ class TemperatureModel(SuperDataModel):
     """
     temperature readings
     """
-    def __init__(self):
-        pass
+    pass;
 
 
 class AllTheData:
@@ -33,9 +33,9 @@ class AllTheData:
     This class simply contains a list of all the data models we'll be looking for in the program.
     """
     #this is a static variable. if you wanted a object specific variable, you declare it in init
-    datalist = {    'cabintemp':    TemperatureModel(),
-                    'motortemp':    TemperatureModel(),
-                    'batterytemp':  TemperatureModel()
+    datalist = {    'cabintemp':    TemperatureModel('Cabin Temp'),
+                    'motortemp':    TemperatureModel('Motor Temp'),
+                    'batterytemp':  TemperatureModel('Battery Temp')
                     #etc
                 }
 
