@@ -6,29 +6,20 @@ kivy.require('1.0.6')
 from math import sin
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.button import Button
-from kivy.uix.gridlayout import GridLayout
-from scui.custombuttons import QuickViewButton
+from view.quickview import Quickview
 from graphlib import Graph, MeshLinePlot
-from modelpy import model
+
 """
 main entry point to our program.
 """
 class MyApp(App):
 
     def build(self):
-        graphratio = .7
-        buttonpadding = 10
-        quickviewcols = 2
+
+
 
         mainview = BoxLayout(orientation='horizontal')
-        quickviewpanel = GridLayout(cols=quickviewcols,size_hint=(1-graphratio, 1))
-        quickviewpanel.padding=[buttonpadding,buttonpadding,buttonpadding,buttonpadding]
-        ddmodel = model.datalist
-        for mod in ddmodel.keys():
-            tempbutt = QuickViewButton(ddmodel.get(mod))
-            quickviewpanel.add_widget(tempbutt)
-
+        quickviewpanel = Quickview()
         mainview.add_widget(quickviewpanel)
         mainview.add_widget(self.getgraph())
         return mainview
