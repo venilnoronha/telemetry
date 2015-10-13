@@ -1,12 +1,33 @@
 __author__ = 'paul'
+
+class HazardZone:
+    SAFE=0
+    WARN=1
+    DANGER=2
+    def __init__(self, safe=[0,40], warn=[40,60],danger=60):
+        self.saferange=safe
+        self.warnrange=warn
+        self.dangerrange=danger
+
+    def currentRange(self, val):
+        '''
+        gives the (int) hazard level that something is in given the current value.
+        :param val:
+        :return:
+        '''
+        return self.WARN#testing for now, do some logic to figure this out.
+
 class SuperDataModel:
     """
     base class for all the data that we'll be displaying.
     """
+    histsize = 100
     def __init__(self, name):
         self.name = name
         self.unit = 'Undef'
-        self.val = float("-inf")
+        self.val = 0
+        self.hist = [0]*self.histsize
+        self.hazardranges = HazardZone()
         return
     def getCurrentVal(self):
         return self.val
@@ -15,10 +36,10 @@ class SuperDataModel:
         return self.unit
 
     def getHistory(self):
-        return None;
+        return self.hist;
 
     def getHazardRanges(self):
-        return None;
+        return self.hazardranges;
 
     def getQuickText(self):
         return str(self.val) + ' ' + str(self.unit)
@@ -29,7 +50,8 @@ class TemperatureModel(SuperDataModel):
     """
     def __init__(self, name):
         SuperDataModel.__init__(self,name)
-        self.unit = 'C'
+        #lol unicode is hard in python...
+        self.unit = u"\u00B0C".encode('utf-8')
         return
 
 
