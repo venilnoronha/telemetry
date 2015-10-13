@@ -24,7 +24,7 @@ class MyApp(App):
         mainview = BoxLayout(orientation='horizontal')
         quickviewpanel = GridLayout(cols=quickviewcols,size_hint=(1-graphratio, 1))
         quickviewpanel.padding=[buttonpadding,buttonpadding,buttonpadding,buttonpadding]
-        ddmodel = model.AllTheData.datalist
+        ddmodel = model.datalist
         for mod in ddmodel.keys():
             tempbutt = QuickViewButton(ddmodel.get(mod))
             quickviewpanel.add_widget(tempbutt)

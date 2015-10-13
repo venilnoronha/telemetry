@@ -10,7 +10,7 @@ class QuickViewButton(Button):
 
     def __init__(self, datamodel):
         #python inheritance syntax is so wonky...
-        super(Button, self).__init__(size_hint=(.3, None))
+        Button.__init__(self,size_hint=(.3, None))
         self.datam = datamodel
         self.text = self.getPrettyText()
         self.halign = 'center'
