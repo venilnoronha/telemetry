@@ -1,13 +1,11 @@
 __author__ = 'paul'
-from modelpy.model import *
 import kivy
 kivy.require('1.0.6')
 
-from math import sin
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
-from view.quickview import Quickview
-from view.graphs import GraphView
+from scui.quickview import Quickview
+from scui.graphs import GraphView
 
 """
 main entry point to our program.
