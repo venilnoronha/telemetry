@@ -4,8 +4,8 @@ kivy.require('1.0.6')
 
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
-from scui.quickview import Quickview
-from scui.graphs import GraphView
+from scscui.quickview import Quickview
+from scscui.graphs import GraphView
 
 """
 main entry point to our program.

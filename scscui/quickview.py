@@ -2,7 +2,7 @@
 __author__ = 'paul'
 
 from kivy.uix.gridlayout import GridLayout
-from scui.custombuttons import QuickViewButton
+from scscui.custombuttons import QuickViewButton
 from modelpy import model
 class Quickview(GridLayout):
     """
