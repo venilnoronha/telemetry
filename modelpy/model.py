@@ -54,14 +54,37 @@ class TemperatureModel(SuperDataModel):
         self.unit = u"\u00B0C".encode('utf-8')
         return
 
+class VoltageModel(SuperDataModel):
+    def __init__(self, name):
+        SuperDataModel.__init__(self,name)
+        #lol unicode is hard in python...
+        self.unit = "V".encode('utf-8')
+        return
+
+class AmpModel(SuperDataModel):
+    def __init__(self, name):
+        SuperDataModel.__init__(self,name)
+        #lol unicode is hard in python...
+        self.unit = "A".encode('utf-8')
+        return
+
+class RpmModel(SuperDataModel):
+    def __init__(self, name):
+        SuperDataModel.__init__(self,name)
+        #lol unicode is hard in python...
+        self.unit = "rpm".encode('utf-8')
+        return
 
 """
     This class simply contains a list of all the data models we'll be looking for in the program.
-    """
+"""
 # this is a static variable. if you wanted a object specific variable, you declare it in init
 datalist = {'cabintemp': TemperatureModel('Cabin Temp'),
             'motortemp': TemperatureModel('Motor Temp'),
-            'batterytemp': TemperatureModel('Battery Temp')
+            'batterytemp': TemperatureModel('Battery Temp'),
+            'motor rpm': RpmModel('Motor RPM'),
+            'solar volt': VoltageModel('Solar Volt'),
+            'bat volt': VoltageModel('Battery Volt')
             #etc
             };
 
