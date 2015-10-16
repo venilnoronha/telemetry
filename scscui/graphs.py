@@ -12,6 +12,7 @@ class GraphView(BoxLayout):
         BoxLayout.__init__(self,orientation='vertical')
         self.graph = self.getgraph()
         self.add_widget(self.graph)
+        self.graphtestvar = 0
 
     def getgraph(self):
         graph = Graph(xlabel='X', ylabel='Y', x_ticks_minor=5,
@@ -21,11 +22,12 @@ class GraphView(BoxLayout):
         plot = MeshLinePlot(color=[1, 1, 1, 1])
         plot.points = self.data
         graph.add_plot(plot)
-        Clock.schedule_interval(self.test, 1 / 2.)
+        Clock.schedule_interval(self.test, 1 / 30.)
         return graph
 
     def test(self,*args):
-        index = random.randint(0,100)
+        index = self.graphtestvar % 101
         self.data[index] = (self.data[index][0],random.random())
-        self.graph.plots[0].points=self.data
+        self.graph.plots[0].points = self.data
+        self.graphtestvar += 1
         return
