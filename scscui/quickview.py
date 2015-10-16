@@ -4,6 +4,7 @@ __author__ = 'paul'
 from kivy.uix.gridlayout import GridLayout
 from scscui.custombuttons import QuickViewButton
 from modelpy import model
+from kivy.clock import Clock
 class Quickview(GridLayout):
     """
     defines the class that will give a quick overview of data on the left side of the window.
@@ -16,9 +17,19 @@ class Quickview(GridLayout):
         quickviewcols = 2
         GridLayout.__init__(self,cols=quickviewcols,size_hint=(.3, 1))
         self.padding=[buttonpadding,buttonpadding,buttonpadding,buttonpadding]
+        self.allbuttons = []
         ddmodel = model.datalist
         for mod in ddmodel.keys():
             tempbutt = QuickViewButton(ddmodel.get(mod))
             self.add_widget(tempbutt)
+            self.allbuttons.append(tempbutt)
+        self.setupUpdateThread()
 
+    def setupUpdateThread(self):
+        Clock.schedule_interval(self.update, 1 / 30.)
+        return
 
+    def update(self,*args):
+        for button in self.allbuttons:
+            button.update()
+        return

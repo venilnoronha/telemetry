@@ -10,7 +10,7 @@ class QuickViewButton(Button):
 
     def __init__(self, datamodel):
         #python inheritance syntax is so wonky...
-        Button.__init__(self,size_hint=(.3, None))
+        Button.__init__(self)
         self.datam = datamodel
         self.text = self.getPrettyText()
         self.halign = 'center'
@@ -29,3 +29,7 @@ class QuickViewButton(Button):
             return cautioncol
         else:
             return dangercol
+
+    def update(self):
+        self.text = self.getPrettyText()
+        pass
