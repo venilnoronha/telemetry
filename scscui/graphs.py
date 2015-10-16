@@ -1,13 +1,17 @@
 __author__ = 'paul'
 from math import sin
 from graphlib import Graph, MeshLinePlot
-from kivy.uix.gridlayout import GridLayout
+from kivy.uix.boxlayout import BoxLayout
+from kivy.clock import Clock
+import random
 
-class GraphView(GridLayout):
+class GraphView(BoxLayout):
     def __init__(self):
         self.currentrows=1
-        GridLayout.__init__(self,rows=self.currentrows,size_hint=(.7, 1))
-        self.add_widget(self.getgraph())
+        self.data = [(x, sin(x / 10.)) for x in range(0, 101)]
+        BoxLayout.__init__(self,orientation='vertical')
+        self.graph = self.getgraph()
+        self.add_widget(self.graph)
 
     def getgraph(self):
         graph = Graph(xlabel='X', ylabel='Y', x_ticks_minor=5,
@@ -15,7 +19,13 @@ class GraphView(GridLayout):
         y_grid_label=True, x_grid_label=True, padding=5,
         x_grid=True, y_grid=True, xmin=-0, xmax=100, ymin=-1, ymax=1)
         plot = MeshLinePlot(color=[1, 1, 1, 1])
-        plot.points = [(x, sin(x / 10.)) for x in range(0, 101)]
+        plot.points = self.data
         graph.add_plot(plot)
-
+        Clock.schedule_interval(self.test, 1 / 2.)
         return graph
+
+    def test(self,*args):
+        index = random.randint(0,100)
+        self.data[index] = (self.data[index][0],random.random())
+        self.graph.plots[0].points=self.data
+        return
