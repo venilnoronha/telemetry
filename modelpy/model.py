@@ -78,6 +78,10 @@ class RpmModel(SuperDataModel):
 """
     This class simply contains a list of all the data models we'll be looking for in the program.
 """
+import socket   #for sockets
+import sys  #for exit
+from kivy.clock import Clock
+
 # this is a static variable. if you wanted a object specific variable, you declare it in init
 datalist = {'cabintemp': TemperatureModel('Cabin Temp'),
             'motortemp': TemperatureModel('Motor Temp'),
@@ -88,23 +92,51 @@ datalist = {'cabintemp': TemperatureModel('Cabin Temp'),
             #etc
             };
 
+
 class SolarCarConnector:
+    HOST="";
+    PORT=0;
+    REMOTE_IP=''
     """
     this class handles actually making a connection to the simulation or the actual microprocessor.
     """
 
     def __init__(self, addr):
-        self.socketaddr = addr
+        REMOTE_IP = addr
+        try:
+            #create an AF_INET, STREAM socket (TCP)
+            self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        except socket.error, msg:
+            print 'Failed to create socket. Error code: ' + str(msg[0]) + ' , Error message : ' + msg[1]
+            sys.exit()
+        print 'Socket Created'
         pass
 
     def startserv(self, pollrate):
         '''
-        should attempt to establish a connection and spin off a new thread that polls every @pollrate miliseconds(or something)
+        should attempt to establish a connection and spin off a new thread that polls every @pollrate seconds(or something)
         do whatever necessary for when you can't establish a connection...
         do NOT block the main UI with this.
         :return:
         '''
+        ''' Should we try to connect given a host name
+        try:
+            REMOTE_IP = socket.gethostbyname(HOST)
+        except socket.gaierror:
+            #could not resolve
+            print 'Hostname could not be resolved. Exiting'
+            sys.exit()
+        print 'Ip address of ' + HOST + ' is ' + REMOTE_IP
+        '''
+        try:
+            self.s.connect((self.REMOTE_IP,self.PORT))
+        except socket.error:
+            print('Connection cannot be established. Exiting')
+            sys.exit()
+        print 'Socket Connected to'+self.HOST+'on ip '+self.REMOTE_IP
+        Clock.schedule_interval(self.poll,pollrate)
         pass
+
 
     def poll(self):
         '''
@@ -112,10 +144,21 @@ class SolarCarConnector:
         should be called within thread in startserv
         :return:
         '''
+        message=self.s.recv(4096)
+        parsedmessage=self.parsemessage(self,message)
+        #do something to parsedmessage
+        #self.updateModel(self)
         pass
 
     def parsemessage(self, msg):
-        pass
+        '''
+        code to parse message
+        '''
+        str1=[]
+        str1=msg.split(',')
+        for item in str1:
+            print item
+        return
 
     def updateModel(self):
         '''
