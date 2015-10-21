@@ -6,7 +6,7 @@ class HazardZone:
     SAFE=0
     WARN=1
     DANGER=2
-    def __init__(self, safe=[0,40], warn=[40,60],danger=60):
+    def __init__(self, safe=[0,20, 30, 40], warn=[20,30, 40, 60],danger=60):
         self.saferange=safe
         self.warnrange=warn
         self.dangerrange=danger
@@ -30,13 +30,28 @@ class HazardZone:
         :param intervals:
         :return:
         '''
-        minin = min(intervals)
-        maxin = max(intervals)
+        is_valid = True
 
-        if(val >= minin and val < maxin):
-            return True
+        i = 0
+        while(i < len(intervals)):
+            minin = min(intervals[i], intervals[i +1])
+            maxin = max(intervals[i], intervals[i + 1])
 
-        return False
+            if(val >= minin and val < maxin):
+                is_valid = True
+            else:
+                is_valid = False
+
+            i += 2
+            
+        return is_valid
+
+       # minin = min(intervals)
+       # maxin = max(intervals)
+
+
+
+  #      return False
 
 class SuperDataModel:
     """
@@ -48,8 +63,12 @@ class SuperDataModel:
         self.unit = 'Undef'
         self.val = 0.
         self.hist = [0]*self.histsize
+    ##########comment out 2 lines below
         self.hazardranges = HazardZone()
+        Clock.schedule_interval(self.test, .5)
         return
+    def test(self, *arg):
+        self.val+= 4
     def getCurrentVal(self):
         return self.val
 
