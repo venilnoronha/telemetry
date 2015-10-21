@@ -1,4 +1,6 @@
 __author__ = 'paul'
+from kivy.clock import Clock
+
 
 
 class HazardZone:
@@ -16,7 +18,26 @@ class HazardZone:
         :param val:
         :return:
         '''
-        return self.WARN#testing for now, do some logic to figure this out.
+        if self.checkInterval(self.saferange,val):
+            return self.SAFE
+        elif self.checkInterval(self.warnrange,val):
+            return self.WARN
+        else:
+            return self.DANGER
+
+    def checkInterval(self, intervals, val):
+        '''
+
+        :param intervals:
+        :return:
+        '''
+        minin = min(intervals)
+        maxin = max(intervals)
+
+        if(val >= minin and val < maxin):
+            return True
+
+        return False
 
 
 from collections import deque
@@ -30,8 +51,10 @@ class SuperDataModel:
     def __init__(self, name):
         self.name = name
         self.unit = 'Undef'
+
         self.val = 0
         self.hist = deque(maxlen=self.histsize)
+
         self.hazardranges = HazardZone()
         return
     def getCurrentVal(self):

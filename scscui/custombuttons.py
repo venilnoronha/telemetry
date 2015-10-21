@@ -22,7 +22,7 @@ class QuickViewButton(Button):
         return self.datam.name+'\n[b]'+self.datam.getQuickText()+'[/b]'
 
     def getColor(self):
-        zone = self.datam.getHazardRanges().currentRange(0)
+        zone = self.datam.getHazardRanges().currentRange(self.datam.val)
         if(zone == HazardZone.SAFE):
             return safecol
         elif (zone == HazardZone.WARN):
@@ -32,4 +32,5 @@ class QuickViewButton(Button):
 
     def update(self):
         self.text = self.getPrettyText()
+        self.background_color=self.getColor()
         pass
