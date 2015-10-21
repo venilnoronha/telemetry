@@ -2,6 +2,7 @@ __author__ = 'paul'
 from kivy.clock import Clock
 
 
+
 class HazardZone:
     SAFE=0
     WARN=1
@@ -53,7 +54,11 @@ class HazardZone:
 
   #      return False
 
+
+from collections import deque
+
 class SuperDataModel:
+
     """
     base class for all the data that we'll be displaying.
     """
@@ -61,9 +66,16 @@ class SuperDataModel:
     def __init__(self, name):
         self.name = name
         self.unit = 'Undef'
+<<<<<<< HEAD
         self.val = 0.
         self.hist = [0]*self.histsize
     ##########comment out 2 lines below
+=======
+
+        self.val = 0
+        self.hist = deque(maxlen=self.histsize)
+
+>>>>>>> origin/master
         self.hazardranges = HazardZone()
         Clock.schedule_interval(self.test, .5)
         return
@@ -71,6 +83,12 @@ class SuperDataModel:
         self.val+= 4
     def getCurrentVal(self):
         return self.val
+
+    def setCurrentVal(self,value):
+        for i in range(self.histsize-2,0,-1):
+            self.hist.append(self.val)
+        self.val=value
+        pass
 
     def getUnit(self):
         return self.unit
@@ -135,17 +153,15 @@ datalist = {'cabintemp': TemperatureModel('Cabin Temp'),
 
 class SolarCarConnector:
     HOST="";
-    PORT=0;
-    REMOTE_IP=''
+    PORT=13000;
     """
     this class handles actually making a connection to the simulation or the actual microprocessor.
     """
 
-    def __init__(self, addr):
-        REMOTE_IP = addr
+    def __init__(self):
         try:
             #create an AF_INET, STREAM socket (TCP)
-            self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         except socket.error, msg:
             print 'Failed to create socket. Error code: ' + str(msg[0]) + ' , Error message : ' + msg[1]
             sys.exit()
@@ -159,22 +175,22 @@ class SolarCarConnector:
         do NOT block the main UI with this.
         :return:
         '''
-        ''' Should we try to connect given a host name
+
         try:
-            REMOTE_IP = socket.gethostbyname(HOST)
-        except socket.gaierror:
-            #could not resolve
-            print 'Hostname could not be resolved. Exiting'
-            sys.exit()
-        print 'Ip address of ' + HOST + ' is ' + REMOTE_IP
-        '''
-        try:
-            self.s.connect((self.REMOTE_IP,self.PORT))
-        except socket.error:
-            print('Connection cannot be established. Exiting')
-            sys.exit()
-        print 'Socket Connected to'+self.HOST+'on ip '+self.REMOTE_IP
-        Clock.schedule_interval(self.poll,pollrate)
+            self.s.bind((self.HOST, self.PORT))
+        except socket.error , msg:
+            print 'Bind failed. Error Code : ' + str(msg[0]) + ' Message ' + msg[1]
+
+        print 'Socket bind complete'
+
+        #self.s.listen(1)
+        #print 'Socket now listening'
+
+        #conn, addr = self.s.accept()
+        #print 'Connected with ' + addr[0] + ':' + str(addr[1])
+        while 1:
+            self.poll()
+        #Clock.schedule_interval(self.poll,pollrate)
         pass
 
 
@@ -185,24 +201,44 @@ class SolarCarConnector:
         :return:
         '''
         message=self.s.recv(4096)
-        parsedmessage=self.parsemessage(self,message)
-        #do something to parsedmessage
-        #self.updateModel(self)
+        print('message recieved')
+        str=message.split(';')
+        str2=[str.size()]
+        i=0
+        for split in str:
+            str2[i]=split.split(',')
+            i=i+1
+        self.updateModel(str)
         pass
+
+    def messageIsValid(message):
+        if message[0] in datalist.keys():
+            try:
+                float(message[1])
+                return True
+            except ValueError:
+                print('Invaild message')
+                return False
+        else:
+            print('Invaild message')
+            return False
 
     def parsemessage(self, msg):
         '''
         code to parse message
         '''
         str1=[]
-        str1=msg.split(',')
+        str1=msg.split(';')
         for item in str1:
             print item
         return
 
-    def updateModel(self):
+    def updateModel(self, info):
         '''
 
         :return:
         '''
+        for i in range(0, info.size()):
+            if(self.messageIsValid(info[i])):
+                datalist[info[i][0]].setCurrentValue()
         pass
