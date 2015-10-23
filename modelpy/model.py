@@ -1,5 +1,5 @@
 __author__ = 'paul'
-from kivy.clock import Clock
+
 
 
 
@@ -69,7 +69,7 @@ class SuperDataModel:
         self.val = 20
         self.hist = deque(maxlen=self.histsize)
         self.hazardranges = HazardZone()
-        Clock.schedule_interval(self.test, .5)
+        #Clock.schedule_interval(self.test, .5)
         return
     def test(self, *arg):
         self.val+= 4
@@ -130,7 +130,7 @@ class RpmModel(SuperDataModel):
 """
 import socket   #for sockets
 import sys  #for exit
-from kivy.clock import Clock
+import threading
 
 # this is a static variable. if you wanted a object specific variable, you declare it in init
 datalist = {'cabintemp': TemperatureModel('Cabin Temp'),
@@ -149,7 +149,6 @@ class SolarCarConnector:
     """
     this class handles actually making a connection to the simulation or the actual microprocessor.
     """
-
     def __init__(self):
         try:
             #create an AF_INET, STREAM socket (TCP)
@@ -159,9 +158,14 @@ class SolarCarConnector:
             print 'Failed to create socket. Error code: ' + str(msg[0]) + ' , Error message : ' + msg[1]
             sys.exit()
         print 'Socket Created'
+        try:
+            thread = threading.Thread(target=self.startserv, args=())
+            thread.start()
+        except:
+            print 'fucked up'
         pass
 
-    def startserv(self, pollrate=1):
+    def startserv(self):
         '''
         should attempt to establish a connection and spin off a new thread that polls every @pollrate seconds(or something)
         do whatever necessary for when you can't establish a connection...
@@ -171,6 +175,7 @@ class SolarCarConnector:
         print 'starting serv'
         print 'please run SimData'
         print 'startserv running from graphs.py'
+        self.s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         try:
             self.s.bind((self.HOST, self.PORT))
         except socket.error , msg:
@@ -183,8 +188,7 @@ class SolarCarConnector:
         conn, addr = self.s.accept()
         print 'Connected with ' + addr[0] + ':' + str(addr[1])
 
-        while 1:
-            self.poll(conn)
+        self.poll(conn);
         pass
 
 
@@ -194,34 +198,30 @@ class SolarCarConnector:
         should be called within thread in startserv
         :return:
         '''
-
-
-        message=sock.recv(4096)
-
-        str=message.split(';')
-        #print str
-        str2=[[0 for x in range(2)] for x in range(len(str))]
-        i=0
-        for s in str:
-            str2[i][0], str2[i][1]=s.split(':')
-            i=i+1
-        self.updateModel(str2)
+        while 1:
+            message=sock.recv(4096)
+            if not message:
+                continue
+            str=message.split(';')
+            #print str
+            str2=[[0 for x in range(2)] for x in range(len(str))]
+            i=0
+            for s in str:
+                str2[i][0], str2[i][1]=s.split(':')
+                i=i+1
+            self.updateModel(str2)
         pass
 
     def messageIsValid(self,val=[]):
-        print(val[0])
-        print(val[1])
         if val[0] in datalist.keys():
             try:
                 int(val[1])
                 return True
             except ValueError:
                 print('Invalid value')
-                print(val)
                 return False
         else:
             print('Invalid key:')
-            print(val[0])
             return False
 
     def parsemessage(self, msg):
@@ -243,3 +243,4 @@ class SolarCarConnector:
             if(self.messageIsValid(info[i])):
                 datalist[info[i][0]].setCurrentVal(int(info[i][1]))
         pass
+
