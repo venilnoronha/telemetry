@@ -4,7 +4,7 @@ from graphlib import Graph, MeshLinePlot
 from kivy.uix.boxlayout import BoxLayout
 from kivy.clock import Clock
 import random
-from modelpy import SolarCarConnector
+from modelpy.connector import SolarCarConnector
 from modelpy import datalist
 
 
