@@ -11,7 +11,7 @@ from modelpy import datalist
 
 class GraphView(BoxLayout):
     def __init__(self):
-        self.currentrows=1
+
         self.data = [(x, sin(x / 10.)) for x in range(0, 101)]
         BoxLayout.__init__(self,orientation='vertical')
         self.graph = self.getgraph()
@@ -46,3 +46,30 @@ class GraphView(BoxLayout):
         :return:
         '''
         pass
+
+class SingleUnitPlot:
+    '''
+    I decided to make this class HAVE a Graph obj instead of BE a Graph...
+    '''
+    def __init__(self, datamodel):
+        self.datas = [datamodel]
+        self.graphobj = Graph(x_ticks_minor=5,
+        x_ticks_major=25, y_ticks_major=1,
+        y_grid_label=True, x_grid_label=True, padding=5,
+        x_grid=True, y_grid=True, xmin=-0, xmax=100, ymin=-100, ymax=100)
+        self.graphobj.xlabel = 'Time'
+        self.graphobj.ylabel = datamodel.unittype
+        self.unittype=datamodel.unittype
+        return
+
+    def checkUnitType(self, unittype):
+        return unittype == self.unittype
+
+    def checkModelAlreadyViewing(self, datamodel):
+        return datamodel in self.datas #not sure if this will check pointer or values...hopefully pointers.
+
+    def addModel(self, datamodel):
+        return
+
+    def removeModel(self, datamodel):
+        return

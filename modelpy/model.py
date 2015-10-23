@@ -65,7 +65,8 @@ class SuperDataModel:
     histsize = 100
     def __init__(self, name):
         self.name = name
-        self.unit = 'Undef'
+        self.unit = ''
+        self.unittype = 'None'
         self.val = 20
         self.hist = deque(maxlen=self.histsize)
         self.hazardranges = HazardZone()
