@@ -4,6 +4,10 @@ from graphlib import Graph, MeshLinePlot
 from kivy.uix.boxlayout import BoxLayout
 from kivy.clock import Clock
 import random
+from modelpy import SolarCarConnector
+from modelpy import datalist
+
+
 
 class GraphView(BoxLayout):
     def __init__(self):
@@ -13,12 +17,15 @@ class GraphView(BoxLayout):
         self.graph = self.getgraph()
         self.add_widget(self.graph)
         self.graphtestvar = 0
+        connect= SolarCarConnector()
+        connect.startserv(1)
+        return
 
     def getgraph(self):
         graph = Graph(xlabel='X', ylabel='Y', x_ticks_minor=5,
         x_ticks_major=25, y_ticks_major=1,
         y_grid_label=True, x_grid_label=True, padding=5,
-        x_grid=True, y_grid=True, xmin=-0, xmax=100, ymin=-1, ymax=1)
+        x_grid=True, y_grid=True, xmin=-0, xmax=100, ymin=-100, ymax=100)
         plot = MeshLinePlot(color=[1, 1, 1, 1])
         plot.points = self.data
         graph.add_plot(plot)
@@ -27,7 +34,8 @@ class GraphView(BoxLayout):
 
     def test(self,*args):
         index = self.graphtestvar % 101
-        self.data[index] = (self.data[index][0],random.random())
+        #self.data[index] = (self.data[index][0],random.random())
+        self.data[index] = (self.data[index][0],datalist["cabintemp"].getCurrentVal())
         self.graph.plots[0].points = self.data
         self.graphtestvar += 1
         return

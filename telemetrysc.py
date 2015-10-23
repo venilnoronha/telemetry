@@ -6,7 +6,7 @@ from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from scscui.quickview import Quickview
 from scscui.graphs import GraphView
-from modelpy import SolarCarConnector
+
 
 """
 main entry point to our program.
@@ -19,8 +19,6 @@ class MyApp(App):
         graphviewpanel = GraphView()
         mainview.add_widget(quickviewpanel)
         mainview.add_widget(graphviewpanel)
-        #connect= SolarCarConnector()
-        #connect.startserv(1)
         return mainview
 
 

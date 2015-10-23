@@ -51,8 +51,7 @@ class SuperDataModel:
     def __init__(self, name):
         self.name = name
         self.unit = 'Undef'
-
-        self.val = 0
+        self.val = 20
         self.hist = deque(maxlen=self.histsize)
 
         self.hazardranges = HazardZone()
@@ -120,15 +119,15 @@ from kivy.clock import Clock
 datalist = {'cabintemp': TemperatureModel('Cabin Temp'),
             'motortemp': TemperatureModel('Motor Temp'),
             'batterytemp': TemperatureModel('Battery Temp'),
-            'motor rpm': RpmModel('Motor RPM'),
-            'solar volt': VoltageModel('Solar Volt'),
-            'bat volt': VoltageModel('Battery Volt')
+            'motorrpm': RpmModel('Motor RPM'),
+            'solarvolt': VoltageModel('Solar Volt'),
+            'batvolt': VoltageModel('Battery Volt')
             #etc
             };
 
 
 class SolarCarConnector:
-    HOST="";
+    HOST="localhost";
     PORT=13000;
     """
     this class handles actually making a connection to the simulation or the actual microprocessor.
@@ -137,21 +136,22 @@ class SolarCarConnector:
     def __init__(self):
         try:
             #create an AF_INET, STREAM socket (TCP)
-            self.s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            #self.s.setblocking(0)
         except socket.error, msg:
             print 'Failed to create socket. Error code: ' + str(msg[0]) + ' , Error message : ' + msg[1]
             sys.exit()
         print 'Socket Created'
         pass
 
-    def startserv(self, pollrate):
+    def startserv(self, pollrate=1):
         '''
         should attempt to establish a connection and spin off a new thread that polls every @pollrate seconds(or something)
         do whatever necessary for when you can't establish a connection...
         do NOT block the main UI with this.
         :return:
         '''
-
+        print 'starting serv'
         try:
             self.s.bind((self.HOST, self.PORT))
         except socket.error , msg:
@@ -159,44 +159,50 @@ class SolarCarConnector:
 
         print 'Socket bind complete'
 
-        #self.s.listen(1)
-        #print 'Socket now listening'
+        self.s.listen(1)
+        print 'Socket now listening'
+        conn, addr = self.s.accept()
+        print 'Connected with ' + addr[0] + ':' + str(addr[1])
 
-        #conn, addr = self.s.accept()
-        #print 'Connected with ' + addr[0] + ':' + str(addr[1])
         while 1:
-            self.poll()
-        #Clock.schedule_interval(self.poll,pollrate)
+            self.poll(conn)
         pass
 
 
-    def poll(self):
+    def poll(self,sock):
         '''
         grr...idk how to make private methods...
         should be called within thread in startserv
         :return:
         '''
-        message=self.s.recv(4096)
-        print('message recieved')
+
+
+        message=sock.recv(4096)
+
         str=message.split(';')
-        str2=[str.size()]
+        #print str
+        str2=[[0 for x in range(2)] for x in range(len(str))]
         i=0
-        for split in str:
-            str2[i]=split.split(',')
+        for s in str:
+            str2[i][0], str2[i][1]=s.split(':')
             i=i+1
-        self.updateModel(str)
+        self.updateModel(str2)
         pass
 
-    def messageIsValid(message):
-        if message[0] in datalist.keys():
+    def messageIsValid(self,val=[]):
+        print(val[0])
+        print(val[1])
+        if val[0] in datalist.keys():
             try:
-                float(message[1])
+                int(val[1])
                 return True
             except ValueError:
-                print('Invaild message')
+                print('Invalid value')
+                print(val)
                 return False
         else:
-            print('Invaild message')
+            print('Invalid key:')
+            print(val[0])
             return False
 
     def parsemessage(self, msg):
@@ -214,7 +220,7 @@ class SolarCarConnector:
 
         :return:
         '''
-        for i in range(0, info.size()):
+        for i in range(0, len(info)):
             if(self.messageIsValid(info[i])):
-                datalist[info[i][0]].setCurrentValue()
+                datalist[info[i][0]].setCurrentVal(int(info[i][1]))
         pass
