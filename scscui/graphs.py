@@ -39,3 +39,10 @@ class GraphView(BoxLayout):
         self.graph.plots[0].points = self.data
         self.graphtestvar += 1
         return
+
+    def handleModel(self, model):
+        '''
+        :param model: the pointer to the datamodel that we want to respond to (based on the click on a button)
+        :return:
+        '''
+        pass
