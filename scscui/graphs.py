@@ -9,6 +9,7 @@ from modelpy import datalist
 
 
 
+
 class GraphView(BoxLayout):
     def __init__(self):
 
@@ -18,7 +19,7 @@ class GraphView(BoxLayout):
         self.add_widget(self.graph)
         self.graphtestvar = 0
         connect= SolarCarConnector()
-        connect.startserv(1)
+        #connect.startserv()
         return
 
     def getgraph(self):

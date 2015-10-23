@@ -26,7 +26,7 @@ def get_data():
 	f = str(w6.get())
 	data = "cabintemp:" + a + ";" + "motortemp:" + b + ";" "batterytemp:" + c + ";" + "motorrpm:" + d + ";" + "solarvolt:" + e + ";" + "batvolt:" + f
 	UDPSock.sendall(data)
-	master.after(1000, get_data)
+	master.after(66, get_data)
 	
 #Slider Stuff
 master = Tk()
