@@ -12,26 +12,17 @@ from modelpy import datalist
 
 class GraphView(BoxLayout):
     def __init__(self):
-
-        self.data = [(x, sin(x / 10.)) for x in range(0, 101)]
         BoxLayout.__init__(self,orientation='vertical')
-        self.graph = self.getgraph()
-        self.add_widget(self.graph)
+        gobj = SingleUnitPlot(datalist["cabintemp"])
+        gobj2 = SingleUnitPlot(datalist["cabintemp"])
+        self.add_widget(gobj.graphobj)
+        self.add_widget(gobj2.graphobj)
         self.graphtestvar = 0
-        connect= SolarCarConnector()
+        #i'm commenting these out for now.
+        #connect= SolarCarConnector()
         #connect.startserv()
         return
 
-    def getgraph(self):
-        graph = Graph(xlabel='X', ylabel='Y', x_ticks_minor=5,
-        x_ticks_major=25, y_ticks_major=1,
-        y_grid_label=True, x_grid_label=True, padding=5,
-        x_grid=True, y_grid=True, xmin=-0, xmax=100, ymin=-100, ymax=100)
-        plot = MeshLinePlot(color=[1, 1, 1, 1])
-        plot.points = self.data
-        graph.add_plot(plot)
-        Clock.schedule_interval(self.test, 1 / 30.)
-        return graph
 
     def test(self,*args):
         index = self.graphtestvar % 101
@@ -52,15 +43,21 @@ class SingleUnitPlot:
     '''
     I decided to make this class HAVE a Graph obj instead of BE a Graph...
     '''
+    minwidth = 10#seconds
     def __init__(self, datamodel):
         self.datas = [datamodel]
+        self.testdata = [(x, sin(x / 10.)) for x in range(0, 101)]#fortesting
         self.graphobj = Graph(x_ticks_minor=5,
         x_ticks_major=25, y_ticks_major=1,
         y_grid_label=True, x_grid_label=True, padding=5,
-        x_grid=True, y_grid=True, xmin=-0, xmax=100, ymin=-100, ymax=100)
+        x_grid=True, y_grid=True, xmin=-0, xmax=100, ymin=0, ymax=100)
         self.graphobj.xlabel = 'Time'
         self.graphobj.ylabel = datamodel.unittype
         self.unittype=datamodel.unittype
+
+        plot = MeshLinePlot(color=[1, 1, 1, 1])
+        plot.points = self.testdata
+        self.graphobj.add_plot(plot)
         return
 
     def checkUnitType(self, unittype):
