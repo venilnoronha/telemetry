@@ -70,10 +70,8 @@ class SuperDataModel:
         self.val = 20
         self.hist = deque(maxlen=self.histsize)
         self.hazardranges = HazardZone()
-        Clock.schedule_interval(self.test, .5)
         return
-    def test(self, *arg):
-        self.val+= 4
+    
     def getCurrentVal(self):
         return self.val
 
