@@ -14,6 +14,8 @@ class GraphView(BoxLayout):
     def __init__(self):
         BoxLayout.__init__(self,orientation='vertical')
         gobj = SingleUnitPlot(datalist["cabintemp"])
+        gobj.addModel(datalist["motortemp"])
+        gobj.addModel(datalist["batterytemp"])
         gobj.startupdating()
         #gobj2 = SingleUnitPlot(datalist["cabintemp"])
         self.add_widget(gobj)
@@ -32,7 +34,7 @@ class GraphView(BoxLayout):
 class SingleUnitPlot(Graph):
     minwidth = 10#seconds
     def __init__(self, datamodel):
-        self.datas = [datamodel]
+
         Graph.__init__(self,x_ticks_minor=5,
         x_ticks_major=25, y_ticks_major=1,
         y_grid_label=True, x_grid_label=True, padding=5,
@@ -40,10 +42,9 @@ class SingleUnitPlot(Graph):
         self.xlabel = 'Time'
         self.ylabel = datamodel.unittype
         self.unittype=datamodel.unittype
-        self.plotdata = [self.getPlotDataForModel(self.datas[0])]
-        plot = MeshLinePlot(color=[1, 1, 1, 1])
-        plot.points = self.plotdata[0]
-        self.add_plot(plot)
+        self.datas = []
+        self.plotdata = []
+        self.addModel(datamodel)
         return
 
     def startupdating(self):
@@ -57,6 +58,12 @@ class SingleUnitPlot(Graph):
         return datamodel in self.datas #not sure if this will check pointer or values...hopefully pointers.
 
     def addModel(self, datamodel):
+        self.datas.append(datamodel)
+        tempplotdata = self.getPlotDataForModel(datamodel)
+        self.plotdata.append(tempplotdata)
+        plot = MeshLinePlot(color=[1, 1, 1, 1])
+        plot.points = tempplotdata
+        self.add_plot(plot)
         return
 
     def removeModel(self, datamodel):
@@ -65,10 +72,9 @@ class SingleUnitPlot(Graph):
 
 
     def updatePlots(self,*args):
-        #let's not handle multiple graphs for now...
-        updateddata = self.getPlotDataForModel(self.datas[0])
-        self.plots[0].points = updateddata
-        print(type(self.plots[0].points))
+        for i in range(0,len(self.datas)):
+            updateddata = self.getPlotDataForModel(self.datas[i])
+            self.plots[i].points = updateddata
         return
 
     def getPlotDataForModel(self, datamodel):
