@@ -2,9 +2,9 @@ __author__ = 'paul'
 from math import sin
 from graphlib import Graph, MeshLinePlot
 from kivy.uix.boxlayout import BoxLayout
-from kivy.clock import Clock
+from kivy.clock import Clock, ClockBase
 import random
-from modelpy.connector import SolarCarConnector
+
 from modelpy import datalist
 
 
@@ -14,22 +14,12 @@ class GraphView(BoxLayout):
     def __init__(self):
         BoxLayout.__init__(self,orientation='vertical')
         gobj = SingleUnitPlot(datalist["cabintemp"])
-        gobj2 = SingleUnitPlot(datalist["cabintemp"])
-        self.add_widget(gobj.graphobj)
-        self.add_widget(gobj2.graphobj)
+        gobj.startupdating()
+        #gobj2 = SingleUnitPlot(datalist["cabintemp"])
+        self.add_widget(gobj)
+        #self.add_widget(gobj2.graphobj)
         self.graphtestvar = 0
-        #i'm commenting these out for now.
-        #connect= SolarCarConnector()
-        #connect.startserv()
-        return
-
-
-    def test(self,*args):
-        index = self.graphtestvar % 101
-        #self.data[index] = (self.data[index][0],random.random())
-        self.data[index] = (self.data[index][0],datalist["cabintemp"].getCurrentVal())
-        self.graph.plots[0].points = self.data
-        self.graphtestvar += 1
+        
         return
 
     def handleModel(self, model):
@@ -39,25 +29,25 @@ class GraphView(BoxLayout):
         '''
         pass
 
-class SingleUnitPlot:
-    '''
-    I decided to make this class HAVE a Graph obj instead of BE a Graph...
-    '''
+class SingleUnitPlot(Graph):
     minwidth = 10#seconds
     def __init__(self, datamodel):
         self.datas = [datamodel]
-        self.testdata = [(x, sin(x / 10.)) for x in range(0, 101)]#fortesting
-        self.graphobj = Graph(x_ticks_minor=5,
+        Graph.__init__(self,x_ticks_minor=5,
         x_ticks_major=25, y_ticks_major=1,
         y_grid_label=True, x_grid_label=True, padding=5,
-        x_grid=True, y_grid=True, xmin=-0, xmax=100, ymin=0, ymax=100)
-        self.graphobj.xlabel = 'Time'
-        self.graphobj.ylabel = datamodel.unittype
+        x_grid=True, y_grid=True, xmin=-100, xmax=0, ymin=0, ymax=100)
+        self.xlabel = 'Time'
+        self.ylabel = datamodel.unittype
         self.unittype=datamodel.unittype
-
+        self.plotdata = [self.getPlotDataForModel(self.datas[0])]
         plot = MeshLinePlot(color=[1, 1, 1, 1])
-        plot.points = self.testdata
-        self.graphobj.add_plot(plot)
+        plot.points = self.plotdata[0]
+        self.add_plot(plot)
+        return
+
+    def startupdating(self):
+        Clock.schedule_interval(self.updatePlots, 1 / 30.)
         return
 
     def checkUnitType(self, unittype):
@@ -71,3 +61,17 @@ class SingleUnitPlot:
 
     def removeModel(self, datamodel):
         return
+
+
+
+    def updatePlots(self,*args):
+        #let's not handle multiple graphs for now...
+        updateddata = self.getPlotDataForModel(self.datas[0])
+        self.plots[0].points = updateddata
+        print(type(self.plots[0].points))
+        return
+
+    def getPlotDataForModel(self, datamodel):
+        hist = list(datamodel.getHistory())
+        rv = [((x-len(hist)+1)*datamodel.histtimescale, hist[x]) for x in range(0, len(hist))]
+        return rv

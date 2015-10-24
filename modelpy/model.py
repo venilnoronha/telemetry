@@ -69,17 +69,18 @@ class SuperDataModel:
         self.unittype = 'None'
         self.val = 20
         self.hist = deque(maxlen=self.histsize)
+        self.filldequezero()
         self.hazardranges = HazardZone()
+        self.histtimescale = 1.
 
         #Clock.schedule_interval(self.test, .5)
         return
-    
+
     def getCurrentVal(self):
         return self.val
 
     def setCurrentVal(self,value):
-        for i in range(self.histsize-2,0,-1):
-            self.hist.append(self.val)
+        self.hist.append(value)
         self.val=value
         pass
 
@@ -94,6 +95,11 @@ class SuperDataModel:
 
     def getQuickText(self):
         return str(self.val) + ' ' + str(self.unit)
+
+    def filldequezero(self):
+        for i in range(0,100):
+            self.hist.append(0)
+        return
 
 class TemperatureModel(SuperDataModel):
     """
