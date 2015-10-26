@@ -7,7 +7,8 @@ class HazardZone:
     SAFE=0
     WARN=1
     DANGER=2
-    def __init__(self, safe=[0,20, 30, 40], warn=[20,30, 40, 60],danger=60):
+    #def __init__(self, safe=[0,20, 30, 40], warn=[20,30, 40, 60],danger=60):
+    def __init__(self, safe=[40], warn=[40, 60],danger=[60]):
         self.saferange=safe
         self.warnrange=warn
         self.dangerrange=danger
@@ -18,24 +19,36 @@ class HazardZone:
         :param val:
         :return:
         '''
-        if self.checkInterval(self.saferange,val):
+        if self.checkInterval(self.saferange,val, self.SAFE):
             return self.SAFE
-        elif self.checkInterval(self.warnrange,val):
+        elif self.checkInterval(self.warnrange,val, self.WARN):
             return self.WARN
         else:
             return self.DANGER
 
-    def checkInterval(self, intervals, val):
+    def checkInterval(self, intervals, val, zone):
         '''
 
         :param intervals:
         :return:
         '''
-        is_valid = True
-
+        is_valid = False
+        if(zone==self.SAFE and len(intervals)==1):
+            if(val<intervals[0]):
+                is_valid=True
+        elif(zone==self.WARN and len(intervals)==2):
+            if(val>=intervals[0] and val<intervals[1]):
+                is_valid=True
+        elif(zone==self.DANGER and len(intervals)==1):
+            if(val>=intervals[0]):
+                is_valid=True
+        else:
+            print 'false'
+            is_valid=False
+        '''
         i = 0
         while(i < len(intervals)):
-            minin = min(intervals[i], intervals[i +1])
+            minin = min(intervals[i], intervals[i + 1])
             maxin = max(intervals[i], intervals[i + 1])
 
             if(val >= minin and val < maxin):
@@ -44,7 +57,7 @@ class HazardZone:
                 is_valid = False
 
             i += 2
-            
+        '''
         return is_valid
 
        # minin = min(intervals)
@@ -72,6 +85,7 @@ class SuperDataModel:
         self.filldequezero()
         self.hazardranges = HazardZone()
         self.histtimescale = 1.
+        self.isselected=False
 
         #Clock.schedule_interval(self.test, .5)
         return
@@ -95,6 +109,13 @@ class SuperDataModel:
 
     def getQuickText(self):
         return str(self.val) + ' ' + str(self.unit)
+
+    def getIsSelected(self):
+        return self.isselected
+
+    def setIsSelected(self,bool):
+        self.isselected=bool
+        pass
 
     def filldequezero(self):
         for i in range(0,100):

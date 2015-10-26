@@ -14,8 +14,14 @@ class GraphView(BoxLayout):
     def __init__(self):
         BoxLayout.__init__(self,orientation='vertical')
         gobj = SingleUnitPlot(datalist["cabintemp"])
+        #datalist["cabintemp"].setIsSelected(True)
+        gobj.addModel(datalist["motorrpm"])
+        gobj.addModel(datalist["batvolt"])
+
+        gobj.addModel(datalist["solarvolt"])
         gobj.addModel(datalist["motortemp"])
         gobj.addModel(datalist["batterytemp"])
+
         gobj.startupdating()
         #gobj2 = SingleUnitPlot(datalist["cabintemp"])
         self.add_widget(gobj)
@@ -67,14 +73,22 @@ class SingleUnitPlot(Graph):
         return
 
     def removeModel(self, datamodel):
+        self.datas.remove(datamodel)
+        tempplotdata = self.getPlotDataForModel(datamodel)
+        self.plotdata.remove(tempplotdata)
+        self.remove_plot()
         return
 
 
 
     def updatePlots(self,*args):
         for i in range(0,len(self.datas)):
-            updateddata = self.getPlotDataForModel(self.datas[i])
-            self.plots[i].points = updateddata
+            if (self.datas[i].getIsSelected()):
+                updateddata = self.getPlotDataForModel(self.datas[i])
+                self.plots[i].points = updateddata
+            else:
+
+                self.plots[i].points=[]
         return
 
     def getPlotDataForModel(self, datamodel):
