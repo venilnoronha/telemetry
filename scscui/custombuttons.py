@@ -38,11 +38,13 @@ class QuickViewButton(Button):
             #list=[[self.getColor()],[50,50,50,50]]
             #self.background_color=[(sum(x) for x in zip(*list))]
             self.datam.setIsSelected(False)
+            self.background_color = self.getColor()
         else:
             print('Set to true')
             #list=[[self.getColor()],[-50,-50,-50,-50]]
             #self.background_color=[(sum(x) for x in zip(*list))]
             self.datam.setIsSelected(True)
+            self.background_color = self.getColor()
         pass
 
     def getPrettyText(self):
