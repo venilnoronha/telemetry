@@ -14,7 +14,7 @@ except socket.error:
     print('Connection cannot be established. Exiting')
     sys.exit()
 
-print "Connected!!!"
+#print "Connected!!!"
 
 
 def get_data():

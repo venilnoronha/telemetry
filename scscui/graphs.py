@@ -13,14 +13,22 @@ from modelpy import datalist
 class GraphView(BoxLayout):
     def __init__(self):
         BoxLayout.__init__(self,orientation='vertical')
-        gobj = SingleUnitPlot(datalist["cabintemp"])
+        #blue
+        white = [1,1,1,1]
+        blue = [0,0,255,1]
+        yellow = [255,255, 0,1]
+        pink = [255,0,255,1]
+        green = [0,255,0,1]
+        red = [255, 0, 0, 1]
+        
+        gobj = SingleUnitPlot(datalist["cabintemp"], red)
         #datalist["cabintemp"].setIsSelected(True)
-        gobj.addModel(datalist["motorrpm"])
-        gobj.addModel(datalist["batvolt"])
+        gobj.addModel(datalist["motorrpm"], white)
+        gobj.addModel(datalist["batvolt"], blue)
 
-        gobj.addModel(datalist["solarvolt"])
-        gobj.addModel(datalist["motortemp"])
-        gobj.addModel(datalist["batterytemp"])
+        gobj.addModel(datalist["solarvolt"], yellow)
+        gobj.addModel(datalist["motortemp"], pink)
+        gobj.addModel(datalist["batterytemp"], green)
 
         gobj.startupdating()
         #gobj2 = SingleUnitPlot(datalist["cabintemp"])
@@ -39,7 +47,7 @@ class GraphView(BoxLayout):
 
 class SingleUnitPlot(Graph):
     minwidth = 10#seconds
-    def __init__(self, datamodel):
+    def __init__(self, datamodel, color):
 
         Graph.__init__(self,x_ticks_minor=5,
         x_ticks_major=25, y_ticks_major=1,
@@ -50,7 +58,8 @@ class SingleUnitPlot(Graph):
         self.unittype=datamodel.unittype
         self.datas = []
         self.plotdata = []
-        self.addModel(datamodel)
+
+        self.addModel(datamodel,color)
         return
 
     def startupdating(self):
@@ -63,11 +72,11 @@ class SingleUnitPlot(Graph):
     def checkModelAlreadyViewing(self, datamodel):
         return datamodel in self.datas #not sure if this will check pointer or values...hopefully pointers.
 
-    def addModel(self, datamodel):
+    def addModel(self, datamodel, color_):
         self.datas.append(datamodel)
         tempplotdata = self.getPlotDataForModel(datamodel)
         self.plotdata.append(tempplotdata)
-        plot = MeshLinePlot(color=[1, 1, 1, 1])
+        plot = MeshLinePlot(color= color_)
         plot.points = tempplotdata
         self.add_plot(plot)
         return

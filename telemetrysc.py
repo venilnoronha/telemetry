@@ -15,10 +15,17 @@ class MyApp(App):
 
     def build(self):
         mainview = BoxLayout(orientation='horizontal')
+        graphview = BoxLayout(orientation = 'vertical')
+
         quickviewpanel = Quickview()
         graphviewpanel = GraphView()
+       # graphlegendpanel = GraphLegend()
+
+     #   graphview.add_widget(graphlegendpanel)
+        graphview.add_widget(graphviewpanel)
         mainview.add_widget(quickviewpanel)
-        mainview.add_widget(graphviewpanel)
+        mainview.add_widget(graphview)
+
 
         #i'm commenting these out for now.
         connect= SolarCarConnector()
