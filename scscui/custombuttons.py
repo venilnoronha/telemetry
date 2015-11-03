@@ -1,6 +1,8 @@
 __author__ = 'paul'
 from kivy.uix.button import Button
 from modelpy.model import *
+from modelpy import colorlist
+
 #static vars for colors
 safecol = [0,1,0,1]
 clicksafecol=[0,.7,0,1]
@@ -14,6 +16,7 @@ class QuickViewButton(Button):
     def __init__(self, datamodel):
         #python inheritance syntax is so wonky...
         Button.__init__(self)
+        self.color = [1,1,1,1]
         self.datam = datamodel
         self.text = self.getPrettyText()
         self.halign = 'center'
@@ -39,12 +42,18 @@ class QuickViewButton(Button):
             #self.background_color=[(sum(x) for x in zip(*list))]
             self.datam.setIsSelected(False)
             self.background_color = self.getColor()
+            self.color = [1,1,1,1]
+            
         else:
             print('Set to true')
             #list=[[self.getColor()],[-50,-50,-50,-50]]
             #self.background_color=[(sum(x) for x in zip(*list))]
             self.datam.setIsSelected(True)
             self.background_color = self.getColor()
+            #print self.datam.name
+            self.color = colorlist[self.datam.name]
+
+
         pass
 
     def getPrettyText(self):

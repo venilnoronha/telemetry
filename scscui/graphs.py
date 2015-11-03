@@ -6,6 +6,7 @@ from kivy.clock import Clock, ClockBase
 import random
 
 from modelpy import datalist
+from modelpy import colorlist
 
 
 
@@ -14,21 +15,16 @@ class GraphView(BoxLayout):
     def __init__(self):
         BoxLayout.__init__(self,orientation='vertical')
         #blue
-        white = [1,1,1,1]
-        blue = [0,0,255,1]
-        yellow = [255,255, 0,1]
-        pink = [255,0,255,1]
-        green = [0,255,0,1]
-        red = [255, 0, 0, 1]
         
-        gobj = SingleUnitPlot(datalist["cabintemp"], red)
+        
+        gobj = SingleUnitPlot(datalist["cabintemp"], colorlist["Cabin Temp"])
         #datalist["cabintemp"].setIsSelected(True)
-        gobj.addModel(datalist["motorrpm"], white)
-        gobj.addModel(datalist["batvolt"], blue)
+        gobj.addModel(datalist["motorrpm"], colorlist["Motor RPM"])
+        gobj.addModel(datalist["batvolt"], colorlist["Battery Volt"])
 
-        gobj.addModel(datalist["solarvolt"], yellow)
-        gobj.addModel(datalist["motortemp"], pink)
-        gobj.addModel(datalist["batterytemp"], green)
+        gobj.addModel(datalist["solarvolt"], colorlist["Solar Volt"])
+        gobj.addModel(datalist["motortemp"], colorlist["Motor Temp"])
+        gobj.addModel(datalist["batterytemp"], colorlist["Battery Temp"])
 
         gobj.startupdating()
         #gobj2 = SingleUnitPlot(datalist["cabintemp"])
