@@ -27,7 +27,7 @@ def connect():
 	else:
 		print('Already connected!')
 		return
-	master.after(1000, get_data)
+	master.after(66, get_data)
 
 
 def disconnect():
@@ -47,7 +47,7 @@ def quit():
 	global isConnected
 	if(isConnected==True):
 		UDPSock.sendall("quit")
-		connect.close()
+		UDPSock.close()
 	print("Successfully closed")
 	master.quit()
 	sys.exit()
