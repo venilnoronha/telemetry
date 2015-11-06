@@ -2,8 +2,7 @@ __author__ = 'paul'
 from math import sin
 from graphlib import Graph, MeshLinePlot
 from kivy.uix.boxlayout import BoxLayout
-from kivy.clock import Clock, ClockBase
-import random
+from kivy.clock import Clock
 
 from modelpy import datalist
 from modelpy import colorlist

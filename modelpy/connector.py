@@ -8,10 +8,14 @@ import model
 class SolarCarConnector:
     HOST="localhost";
     PORT=13000;
+    message="";
+
     """
     this class handles actually making a connection to the simulation or the actual microprocessor.
     """
     def __init__(self):
+        #global thread
+        print(threading.active_count())
         try:
             #create an AF_INET, STREAM socket (TCP)
             self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -22,10 +26,16 @@ class SolarCarConnector:
         print 'Socket Created'
         try:
             thread = threading.Thread(target=self.startserv, args=())
+            thread.daemon=True
             thread.start()
         except:
             print 'fucked up'
         pass
+
+    def close(self):
+        global message
+        self.s.close()
+        message="stop"
 
     def startserv(self):
         '''
@@ -53,17 +63,26 @@ class SolarCarConnector:
         self.poll(conn);
         pass
 
-
     def poll(self,sock):
         '''
         grr...idk how to make private methods...
         should be called within thread in startserv
         :return:
         '''
+        global message
         while 1:
             message=sock.recv(4096)
             if not message:
                 continue
+            if (message=="quit"):
+                print("Disconnected, restarting server")
+                sock.close()
+                self.startserv()
+                break
+            if(message=="stop"):
+                print("Stopped")
+                sock.close()
+                break
             str=message.split(';')
             #print str
             str2=[[0 for x in range(2)] for x in range(len(str))]

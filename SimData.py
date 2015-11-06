@@ -1,23 +1,60 @@
 from Tkinter import *
 import os
 from socket import *
+from time import sleep
 
 #Client Stuff
+ident=0
+isConnected=False;
 host = "localhost"
 #host = "10.123.117.23" 
 port = 13000
 addr = (host, port)
-UDPSock = socket(AF_INET, SOCK_STREAM)
-try:
-	UDPSock.connect((host,port))
-except socket.error:
-    print('Connection cannot be established. Exiting')
-    sys.exit()
+UDPSock=socket
 
-#print "Connected!!!"
+def connect():
+	global UDPSock
+	global isConnected
+	if(isConnected==False):
+		UDPSock = socket(AF_INET, SOCK_STREAM)
+		try:
+			UDPSock.connect((host,port))
+		except:
+			print('Connection cannot be established.')
+			return
+		print ("Connect successful")
+		isConnected=True
+	else:
+		print('Already connected!')
+		return
+	master.after(1000, get_data)
 
+
+def disconnect():
+	global UDPSock
+	global isConnected
+	if(isConnected==True):
+		UDPSock.sendall("quit")
+		master.after_cancel(ident)
+		UDPSock.close()
+		isConnected=False
+	else:
+		print("Already disconnected")
+
+def quit():
+	global UDPSock
+	global master
+	global isConnected
+	if(isConnected==True):
+		UDPSock.sendall("quit")
+		connect.close()
+	print("Successfully closed")
+	master.quit()
+	sys.exit()
 
 def get_data():
+	global ident
+	global isConnected
 	a = str(w1.get())
 	b = str(w2.get())
 	c = str(w3.get())
@@ -25,8 +62,14 @@ def get_data():
 	e = str(w5.get())
 	f = str(w6.get())
 	data = "cabintemp:" + a + ";" + "solarvolt:" + b + ";" "batvolt:" + c + ";" + "batterytemp:" + d + ";" + "motorrpm:" + e + ";" + "motortemp:" + f
-	UDPSock.sendall(data)
-	master.after(66, get_data)
+	try:
+		UDPSock.sendall(data)
+	except:
+		print("Sending data failed. Closing connection")
+		UDPSock.close()
+		isConnected=False
+		return
+	ident=master.after(66, get_data)
 	
 #Slider Stuff
 master = Tk()
@@ -60,17 +103,13 @@ w6_label.pack()
 w6 = Scale(master, from_=0, to=100, orient=HORIZONTAL)
 w6.pack()
 w6.set(60)
+w7 =Button(master, text="Connect", command=connect)
+w7.pack()
+w7 =Button(master, text="Disconnect", command=disconnect)
+w7.pack()
+master.protocol("WM_DELETE_WINDOW", quit)
+master.mainloop();
 
-counter = 0
-while counter < 100:
-	master.after(1000, get_data)
-	print('hit mainloop')
-	master.mainloop()
-	print('hit mainloop')
-	counter = counter + 1
-	'''if x == '0':
-		break'''
-UDPSock.close()
-os._exit(0)
+
 
 
