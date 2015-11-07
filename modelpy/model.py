@@ -79,7 +79,7 @@ class SuperDataModel:
     def __init__(self, name):
         self.name = name
         self.unit = ''
-        self.unittype = 'None'
+        self.unittype=''
         self.val = 20
         self.hist = deque(maxlen=self.histsize)
         self.filldequezero()
@@ -130,6 +130,7 @@ class TemperatureModel(SuperDataModel):
         SuperDataModel.__init__(self,name)
         #lol unicode is hard in python...
         self.unit = u"\u00B0C".encode('utf-8')
+        self.unittype="Temperature"
         return
 
 class VoltageModel(SuperDataModel):
@@ -137,6 +138,7 @@ class VoltageModel(SuperDataModel):
         SuperDataModel.__init__(self,name)
         #lol unicode is hard in python...
         self.unit = "V".encode('utf-8')
+        self.unittype="Voltage"
         return
 
 class AmpModel(SuperDataModel):
@@ -144,6 +146,7 @@ class AmpModel(SuperDataModel):
         SuperDataModel.__init__(self,name)
         #lol unicode is hard in python...
         self.unit = "A".encode('utf-8')
+        self.unittype="Current"
         return
 
 class RpmModel(SuperDataModel):
@@ -151,6 +154,7 @@ class RpmModel(SuperDataModel):
         SuperDataModel.__init__(self,name)
         #lol unicode is hard in python...
         self.unit = "rpm".encode('utf-8')
+        self.unittype="RMP"
         return
 
 """

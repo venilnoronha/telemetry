@@ -19,7 +19,7 @@ class SolarCarConnector:
         try:
             #create an AF_INET, STREAM socket (TCP)
             self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            #self.s.setblocking(0)
+
         except socket.error, msg:
             print 'Failed to create socket. Error code: ' + str(msg[0]) + ' , Error message : ' + msg[1]
             sys.exit()
@@ -33,9 +33,9 @@ class SolarCarConnector:
         pass
 
     def close(self):
-        global message
+
         self.s.close()
-        message="stop"
+        self.message="stop"
 
     def startserv(self):
         '''
@@ -69,21 +69,21 @@ class SolarCarConnector:
         should be called within thread in startserv
         :return:
         '''
-        global message
+
         while 1:
-            message=sock.recv(4096)
-            if not message:
+            self.message=sock.recv(4096)
+            if not self.message:
                 continue
-            if (message=="quit"):
+            if (self.message=="quit"):
                 print("Disconnected, restarting server")
                 sock.close()
                 self.startserv()
                 break
-            if(message=="stop"):
+            if(self.message=="stop"):
                 print("Stopped")
                 sock.close()
                 break
-            str=message.split(';')
+            str=self.message.split(';')
             #print str
             str2=[[0 for x in range(2)] for x in range(len(str))]
             i=0

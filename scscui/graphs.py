@@ -11,26 +11,31 @@ from modelpy import colorlist
 
 
 class GraphView(BoxLayout):
+    gobj1=object
+    gobj2=object
+    gobj3=object
+    
     def __init__(self):
         BoxLayout.__init__(self,orientation='vertical')
         #blue
-        
-        
-        gobj = SingleUnitPlot(datalist["cabintemp"], colorlist["Cabin Temp"])
+
+        self.gobj1 = SingleUnitPlot(datalist["cabintemp"], colorlist["Cabin Temp"],"Temperature")
         #datalist["cabintemp"].setIsSelected(True)
-        gobj.addModel(datalist["motorrpm"], colorlist["Motor RPM"])
-        gobj.addModel(datalist["batvolt"], colorlist["Battery Volt"])
+        self.gobj2 = SingleUnitPlot(datalist["batvolt"], colorlist["Battery Volt"],"Voltage")
+        self.gobj3 = SingleUnitPlot(datalist["motorrpm"], colorlist["Motor RPM"],"RPM")
+        self.gobj1.addModel(datalist["motortemp"], colorlist["Motor Temp"])
+        self.gobj1.addModel(datalist["batterytemp"], colorlist["Battery Temp"])
+        self.gobj2.addModel(datalist["solarvolt"], colorlist["Solar Volt"])
 
-        gobj.addModel(datalist["solarvolt"], colorlist["Solar Volt"])
-        gobj.addModel(datalist["motortemp"], colorlist["Motor Temp"])
-        gobj.addModel(datalist["batterytemp"], colorlist["Battery Temp"])
-
-        gobj.startupdating()
+        self.gobj1.startupdating()
+        self.gobj2.startupdating()
+        self.gobj3.startupdating()
         #gobj2 = SingleUnitPlot(datalist["cabintemp"])
-        self.add_widget(gobj)
+
         #self.add_widget(gobj2.graphobj)
+        self.startupdating()
         self.graphtestvar = 0
-        
+
         return
 
     def handleModel(self, model):
@@ -40,9 +45,46 @@ class GraphView(BoxLayout):
         '''
         pass
 
+    def startupdating(self):
+        Clock.schedule_interval(self.checkPlots, 1 / 30.)
+        return
+
+    def checkPlots(self, *args):
+        if(self.gobj1.hasPlot()):
+            if(not self.gobj1.getIsPlotted()):
+                print('added gobj1')
+                self.add_widget(self.gobj1)
+                self.gobj1.setIsPlotted(True)
+        else:
+            if(self.gobj1.getIsPlotted()):
+                self.remove_widget(self.gobj1)
+                self.gobj1.setIsPlotted(False)
+
+        if(self.gobj2.hasPlot()):
+            if(not self.gobj2.getIsPlotted()):
+                print('added gobj2')
+                self.add_widget(self.gobj2)
+                self.gobj2.setIsPlotted(True)
+        else:
+            if(self.gobj2.getIsPlotted()):
+                self.remove_widget(self.gobj2)
+                self.gobj2.setIsPlotted(False)
+
+        if(self.gobj3.hasPlot()):
+            if(not self.gobj3.getIsPlotted()):
+                print('added gobj3')
+                self.add_widget(self.gobj3)
+                self.gobj3.setIsPlotted(True)
+        else:
+            if(self.gobj3.getIsPlotted()):
+                self.remove_widget(self.gobj3)
+                self.gobj3.setIsPlotted(False)
+
 class SingleUnitPlot(Graph):
     minwidth = 10#seconds
-    def __init__(self, datamodel, color):
+    numPlots=0
+    isPlotted=False
+    def __init__(self, datamodel, color, title):
 
         Graph.__init__(self,x_ticks_minor=5,
         x_ticks_major=25, y_ticks_major=1,
@@ -53,9 +95,20 @@ class SingleUnitPlot(Graph):
         self.unittype=datamodel.unittype
         self.datas = []
         self.plotdata = []
-
         self.addModel(datamodel,color)
         return
+
+    def hasPlot(self):
+        if(self.numPlots!=0):
+            return True
+        else:
+            return False
+
+    def setIsPlotted(self,bool):
+        self.isPlotted=bool
+
+    def getIsPlotted(self):
+        return self.isPlotted
 
     def startupdating(self):
         Clock.schedule_interval(self.updatePlots, 1 / 30.)
@@ -86,13 +139,15 @@ class SingleUnitPlot(Graph):
 
 
     def updatePlots(self,*args):
+        counter=0
         for i in range(0,len(self.datas)):
             if (self.datas[i].getIsSelected()):
                 updateddata = self.getPlotDataForModel(self.datas[i])
                 self.plots[i].points = updateddata
+                counter+=1
             else:
-
                 self.plots[i].points=[]
+        self.numPlots=counter
         return
 
     def getPlotDataForModel(self, datamodel):

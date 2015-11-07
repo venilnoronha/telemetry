@@ -13,6 +13,7 @@ import sys
 main entry point to our program.
 """
 class MyApp(App):
+    isConnected=False
     connect=object;
     def build(self):
         global connect
