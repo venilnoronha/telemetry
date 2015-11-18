@@ -1,8 +1,10 @@
 from modules import ElectricalSimulationModel, MotorSimulationModel
+import datetime
 __author__ = 'paul'
 
 class Simulator:
-    def __init__(self):
+    def __init__(self, startdatetime):
+        self.dtime = startdatetime
         self.electricmodule = ElectricalSimulationModel()
         self.motormodule = MotorSimulationModel()
 
@@ -24,6 +26,11 @@ class Simulator:
         #the equation of relationship between Watt-hour and Amp-hour is Wh = mAh * V / 1000
         dummyvolt = 5;
         self.electricmodule.drainPower(motorpowerreq, deltatime)
+        self.updatetime(deltatime)
+
+    def updatetime(self, deltatime):
+        self.dtime = self.dtime + datetime.timedelta(seconds=deltatime)
+        return
 
 #dummy for testing
 if __name__ == '__main__':

@@ -63,3 +63,24 @@ class MotorSimulationModel:
 
         return 80 #some random number for now lol
 
+
+class SolarDayModel:
+    @classmethod
+    def getSolarOutput(cls, datetime):
+        #we may need to figure out how to import numpy and scipy for these stuff..
+        return 1
+
+class PanelSimulationModel:
+    '''
+    encompasses the panel
+    '''
+
+    def __init__(self):
+
+        return
+
+    def getPowerAt(self, datetime):
+        daylight = SolarDayModel.getSolarOutput(datetime)
+        #do some compuation to convert to whatever the return unit should be...
+        return daylight
+
