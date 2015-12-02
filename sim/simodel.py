@@ -29,7 +29,24 @@ class simcarmodel:
         self.electricmodule.drainPower(motorpowerreq, deltatime)
         self.updatetime(deltatime)
 
+    def setTargetPower(self, v):
+        '''
 
+        :param v:
+        :return:
+        '''
+        return
     def updatetime(self, deltatime):
         self.respool.dtime = self.respool.dtime + datetime.timedelta(seconds=deltatime)
         return
+
+    def getHeuristic(self):
+        self.respool
+        return
+
+    def getVelocity(self):
+        '''
+        Based on the initial conditions given, what velocity did we end up with?
+        :return:
+        '''
+        return 40;
