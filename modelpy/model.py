@@ -171,12 +171,12 @@ datalist = {'cabintemp': TemperatureModel('Cabin Temp'),
             #etc
             };
 
-colorlist = {'Cabin Temp': [146, 0, 227, 1], #purple
-            'Motor Temp': [0,0,255,1], #blue
-            'Battery Temp': [255,255, 0,1], #yellow
-            'Motor RPM': [0,255,255,1], #aqua
-            'Solar Volt': [0,255,0,1], #green
-            'Battery Volt': [255, 0, 0, 1] #red
+colorlist = {'Cabin Temp': [1, 0, 1, 1], #purple
+            'Motor Temp': [0,0,1,1], #blue
+            'Battery Temp': [1,1, 0,1], #yellow
+            'Motor RPM': [0,1,1,1], #aqua
+            'Solar Volt': [0,1,0,1], #green
+            'Battery Volt': [1, 0, 0, 1] #red
             #etc
             };
 
