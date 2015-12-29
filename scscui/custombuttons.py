@@ -16,13 +16,16 @@ class QuickViewButton(Button):
     def __init__(self, datamodel):
         #python inheritance syntax is so wonky...
         Button.__init__(self)
-        self.color = [1,1,1,1]
         self.datam = datamodel
         self.text = self.getPrettyText()
         self.halign = 'center'
         self.background_color=self.getColor()
         self.markup = True
         self.bind(on_press=self.pressed)
+        print('Creating button')
+        print(self.datam.name)
+        print(colorlist[self.datam.name])
+
         return
 
     def pressed(self,instance):
@@ -42,7 +45,8 @@ class QuickViewButton(Button):
             #self.background_color=[(sum(x) for x in zip(*list))]
             self.datam.setIsSelected(False)
             self.background_color = self.getColor()
-            self.color = [1,1,1,1]
+
+
             
         else:
             print('Set to true')
@@ -50,13 +54,14 @@ class QuickViewButton(Button):
             #self.background_color=[(sum(x) for x in zip(*list))]
             self.datam.setIsSelected(True)
             self.background_color = self.getColor()
+
             #print self.datam.name
-            self.color = colorlist[self.datam.name]
 
 
         pass
 
     def getPrettyText(self):
+        self.color = colorlist[self.datam.name]
         return self.datam.name+'\n[b]'+self.datam.getQuickText()+'[/b]'
 
     def getColor(self):
@@ -79,4 +84,5 @@ class QuickViewButton(Button):
     def update(self):
         self.text = self.getPrettyText()
         self.background_color=self.getColor()
+
         pass
