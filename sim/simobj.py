@@ -1,5 +1,6 @@
 __author__ = 'paul'
 from simodel import SimCarModel
+import datetime
 
 
 class SimulationObject:
@@ -14,8 +15,10 @@ class SimulationObject:
     OUTOFRESOURCES=-1
     TIMEOUT=-2
     SUCCESS=1
+    DEBUG = True
 
-    def __init__(self, startdatetime):
+    def __init__(self, iname, startdatetime):
+        self.iterationName = iname
         self.currentdatetime = startdatetime
         self.carmodel = SimCarModel()
         self.rules = DailyItinerary()
@@ -35,7 +38,15 @@ class SimulationObject:
         This method actual runs through all of the itinerary per day
         either until the battery is completely run out or when we've reached the end of the race.
         '''
-        return
+        rmsg = self.getReturnMsg()
+        while self.shouldKeepRunning(rmsg):
+            self.update(SimulationObject.timeresolutionseconds)
+            rmsg = self.getReturnMsg()
+
+        return rmsg
+
+    def shouldKeepRunning(self, msg):
+        return msg == SimulationObject.RUNNING
 
     def update(self, deltatime):
         '''
@@ -46,12 +57,15 @@ class SimulationObject:
          any of the state of the car model.
          finally, we advance the current time with the deltatime.
         '''
+        if self.DEBUG:
+            print('updating %s...' % self.iterationName)
         self.carmodel.stepSim(self.currentdatetime, deltatime)
         self.rules.updateStateFromRules(self.currentdatetime, deltatime, self.carmodel)
         self.advancecurrentdatetime(deltatime)
         return
 
     def advancecurrentdatetime(self, deltatime):
+        self.currentdatetime = self.currentdatetime + datetime.timedelta(seconds=deltatime)
         return
 
     def getReturnMsg(self):
@@ -59,6 +73,7 @@ class SimulationObject:
         checks if the simulations has either met the success or failure states, and should stop running and return or not.
         :return: the return message
         '''
+
         return SimulationObject.RUNNING
 
 class DailyItinerary:

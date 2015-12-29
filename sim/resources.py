@@ -22,8 +22,7 @@ class ResourcePool:
     '''
     defines the entire resource pool for the modeled car during one simulation iteration.
     '''
-    def __init__(self, startdatetime):
+    def __init__(self):
         self.battery = BatteryModel()
-        self.dtime = startdatetime
 
         return

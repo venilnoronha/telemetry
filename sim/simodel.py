@@ -1,6 +1,6 @@
 from modules import ElectricalSimulationModel, MotorSimulationModel
 from resources import ResourcePool
-import datetime
+
 __author__ = 'paul'
 
 class SimCarModel:
@@ -39,7 +39,14 @@ class SimCarModel:
         #the equation of relationship between Watt-hour and Amp-hour is Wh = mAh * V / 1000
         dummyvolt = 5;
         self.electricmodule.drainPower(motorpowerreq, deltatime)
-        self.updatetime(deltatime)
+        return
+
+    def isOutOfResoures(self):
+        '''
+        TODO
+        :return:
+        '''
+        return False
 
     def setTargetPower(self, v):
         '''
@@ -47,9 +54,6 @@ class SimCarModel:
         :param v:
         :return:
         '''
-        return
-    def updatetime(self, deltatime):
-        self.respool.dtime = self.respool.dtime + datetime.timedelta(seconds=deltatime)
         return
 
     def getHeuristic(self):
