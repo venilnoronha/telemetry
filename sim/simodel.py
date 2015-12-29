@@ -19,9 +19,11 @@ class SimCarModel:
         self.electricmodule = ElectricalSimulationModel(self.respool)
         self.motormodule = MotorSimulationModel()
 
-    def stepSim(self, deltatime):
+    def stepSim(self, currentdatetime, deltatime):
         '''
-
+        This method will take whatever 'state' the car happens to be in, and perform all the
+          energy gain and loss that that state needs to do based on the current time and the elapsed time for that step.
+        :param currentdatetime: a python DateTime object representing the current date and time
         :param deltatime: in seconds
         :return:
         '''

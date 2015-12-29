@@ -2,15 +2,24 @@ __author__ = 'paul'
 from simodel import SimCarModel
 
 
-class SimluationObject:
+class SimulationObject:
     '''
     describes one full 'run' or 'iteration' of the simulation.
     This includes the starting conditions and some variations in the different rules that we might think of implementing.
     the object is self contained and has its own pool of resources. This way, we can multi-thread each iteration on its
     own core or something later, should we decide to do that.
     '''
-    carmodel = SimCarModel()
-    rules = DailyItinerary()
+    timeresolutionseconds = 30
+    RUNNING=0
+    OUTOFRESOURCES=-1
+    TIMEOUT=-2
+    SUCCESS=1
+
+    def __init__(self, startdatetime):
+        self.currentdatetime = startdatetime
+        self.carmodel = SimCarModel()
+        self.rules = DailyItinerary()
+        return
 
 
     def startRun(self):
@@ -27,6 +36,30 @@ class SimluationObject:
         either until the battery is completely run out or when we've reached the end of the race.
         '''
         return
+
+    def update(self, deltatime):
+        '''
+         at each step, we consider all the things that are state-dependent
+         like the acquisition of energy from the solar panels when battery is attached and the loss of energy from
+         motions
+         then we use the datetime variables compare with our DailyItinerary, and figure out if we need to change
+         any of the state of the car model.
+         finally, we advance the current time with the deltatime.
+        '''
+        self.carmodel.stepSim(self.currentdatetime, deltatime)
+        self.rules.updateStateFromRules(self.currentdatetime, deltatime, self.carmodel)
+        self.advancecurrentdatetime(deltatime)
+        return
+
+    def advancecurrentdatetime(self, deltatime):
+        return
+
+    def getReturnMsg(self):
+        '''
+        checks if the simulations has either met the success or failure states, and should stop running and return or not.
+        :return: the return message
+        '''
+        return SimulationObject.RUNNING
 
 class DailyItinerary:
     '''
@@ -46,4 +79,12 @@ class DailyItinerary:
     '''
     def __init__(self):
 
+        return
+
+    def updateStateFromRules(self, currentdatetime, deltatime, carmodel):
+        '''
+        updates the state of the car model based on whatever itinerary or rule within that itinerary we strategize.
+
+        :return:
+        '''
         return
