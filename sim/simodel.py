@@ -3,7 +3,7 @@ from resources import ResourcePool
 import datetime
 __author__ = 'paul'
 
-class simcarmodel:
+class SimCarModel:
     def __init__(self, startdatetime):
         self.respool = ResourcePool(startdatetime)
         self.electricmodule = ElectricalSimulationModel(self.respool)

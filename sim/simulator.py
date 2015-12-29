@@ -1,13 +1,13 @@
 __author__ = 'paul'
 
-from simodel import simcarmodel
+from simodel import SimCarModel
 import datetime
 
 @classmethod
 def runASimIteration():
     #set some initial conditions for simulations
     #such as target powerconsumption, elevation for the next distance, , time of day, etc.
-    s = simcarmodel(datetime.date.today())
+    s = SimCarModel(datetime.date.today())
     s.setTargetVelocity(40)
     #run simulation for so many steps
     steps = 100
