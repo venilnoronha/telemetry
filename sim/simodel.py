@@ -18,6 +18,7 @@ class SimCarModel:
         self.respool = ResourcePool()
         self.electricmodule = ElectricalSimulationModel(self.respool)
         self.motormodule = MotorSimulationModel()
+        self.distanceTraveled = 0#probably will put it in its own obj later.
 
     def stepSim(self, currentdatetime, deltatime):
         '''
@@ -31,14 +32,7 @@ class SimCarModel:
         #imma set a random velocity to hit for now, in meters per second.
         targetvel = 26
 
-        #for now, the return value is Wh
-        motorpowerreq = self.motormodule.getPowerReqForVel(targetvel)
-        print('we need %s Wh of power for motor.' % motorpowerreq)
-
-        #I'm not really sure where we get the volt...but...
-        #the equation of relationship between Watt-hour and Amp-hour is Wh = mAh * V / 1000
-        dummyvolt = 5;
-        self.electricmodule.drainPower(motorpowerreq, deltatime)
+        self.distanceTraveled += targetvel*deltatime
         return
 
     def isOutOfResoures(self):

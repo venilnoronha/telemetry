@@ -5,7 +5,8 @@ import datetime
 
 def runASimIteration():
     s = SimulationObject('test sim', datetime.date.today())
-    s.run()
+    rv = s.run()
+    print('race finished with return message', rv)
     return
 
 #dummy for testing

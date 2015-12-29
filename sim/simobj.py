@@ -20,9 +20,31 @@ class SimulationObject:
     def __init__(self, iname, startdatetime):
         self.iterationName = iname
         self.currentdatetime = startdatetime
+        self.startdatetime = startdatetime
         self.carmodel = SimCarModel()
         self.rules = DailyItinerary()
+        self.initDebugDefaults()
         return
+
+    def initDebugDefaults(self):
+        self.totalRaceMeters = 50000
+        self.timeLimitSeconds = 60*60*24*3
+
+    def readStaticParameters(self):
+        '''
+        reads some data to establish the initial conditions of the simulation iteration.
+        we'll probably end up using json?
+        :return:
+        '''
+        return
+
+    def setDynamicParameters(self):
+        '''
+        The point of the simulation is to vary a bunch of parameters and figure out what the 'best' configuration
+         of parameters are.
+         Therefore, we have to figure out a way to set a whole bunch of policies and rules for our race.
+        :return:
+        '''
 
 
     def startRun(self):
@@ -58,7 +80,7 @@ class SimulationObject:
          finally, we advance the current time with the deltatime.
         '''
         if self.DEBUG:
-            print('updating %s...' % self.iterationName)
+            print('updating', self.iterationName, ', elapsed time:', self.getElapsedSeconds(), 'seconds')
         self.carmodel.stepSim(self.currentdatetime, deltatime)
         self.rules.updateStateFromRules(self.currentdatetime, deltatime, self.carmodel)
         self.advancecurrentdatetime(deltatime)
@@ -68,12 +90,23 @@ class SimulationObject:
         self.currentdatetime = self.currentdatetime + datetime.timedelta(seconds=deltatime)
         return
 
+    def getElapsedDatetime(self):
+        return self.currentdatetime-self.startdatetime
+
+    def getElapsedSeconds(self):
+        return self.getElapsedDatetime().total_seconds()
+
     def getReturnMsg(self):
         '''
         checks if the simulations has either met the success or failure states, and should stop running and return or not.
         :return: the return message
         '''
-
+        if self.carmodel.distanceTraveled >= self.totalRaceMeters:
+            return SimulationObject.SUCCESS
+        if self.carmodel.isOutOfResoures():
+            return SimulationObject.OUTOFRESOURCES
+        if self.getElapsedSeconds() > self.timeLimitSeconds:
+            return SimulationObject.TIMEOUT
         return SimulationObject.RUNNING
 
 class DailyItinerary:
