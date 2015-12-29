@@ -4,8 +4,18 @@ import datetime
 __author__ = 'paul'
 
 class SimCarModel:
-    def __init__(self, startdatetime):
-        self.respool = ResourcePool(startdatetime)
+    '''
+    The SimCarModel should describe all the resources that are relevant to the car,
+    as well as the rules governing how those resources are used.
+    such things include:
+    -battery charge (max charge, charging and depletion behaviors)
+    -how the energy input from solar panel interact with battery
+    -how the motor's power requirement interact with the battery
+    etc.
+    relevant resources should also have a history of values per simulation run so that they can be analyzed.
+    '''
+    def __init__(self):
+        self.respool = ResourcePool()
         self.electricmodule = ElectricalSimulationModel(self.respool)
         self.motormodule = MotorSimulationModel()
 
