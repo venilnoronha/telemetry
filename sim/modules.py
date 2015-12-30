@@ -1,33 +1,22 @@
 __author__ = 'paul'
 
-class ElectricalSimulationModel:
+class BatterySimulationModel:
     '''
     This class should take care of the flow of power in solar panels, MPPT, Battery and loss from microprocessors
     '''
-    def __init__(self, respool):
+    def batteryFlow(self, input, requirement, deltatimeseconds):
         '''
-        dummy values for now.
-        :return:
+        if the input is higher than the power requirements, then the input power will flow directly towards the requirements, and the battery will gain the difference.
+        if the requirement power is higher than the ammount input, then we will lose the difference of the power
+        :param input: the amount of power put into the battery
+        :param requirement: the amount of power that's requested from the battery
+        :return: the amount of charge the battery should gain or lose. (negative is lose, positive is gain.)
         '''
-
-        self.solarpoweramp = 5
-        self.respool = respool
-
-        return
-
-    def drainPower(self, power, deltatime):
-        '''
-        Ideally, we know all the power we need to drain from the electrical unit when we call this per timestep.
-        That way, we can figure out where the charge is distributed (to the motor, from/to the battery, etc)
-        :param amp:
-        :param deltatime:
-        :return:
-        '''
-
-        #if solar panel is providing more power than necessary to run the motor, then we charge the battery.
-        #if not, the battery is drained in addition to whatever power is generated from the panels.
-        self.respool.battery.flow(-power, deltatime)#there's no relationship right now i'm just throwing values around lol.
-        return
+        #calculate the predicted power flow.
+        diff = input - requirement
+        #caluclate the amount of charge that equates to for the amount of time given.
+        chargeflow = deltatimeseconds * diff
+        return chargeflow
 
 class MotorSimulationModel:
     def __init__(self):
@@ -41,27 +30,20 @@ class MotorSimulationModel:
         '''
 
         #gotta do some shenanigans here with velocity-to-efficiency to figure out how much power we need, too.
-
-        return 80 #some random number for now lol
-
-
-class SolarDayModel:
-    @classmethod
-    def getSolarOutput(cls, datetime):
-        #we may need to figure out how to import numpy and scipy for these stuff..
-        return 1
+        factor = .6
+        return vel * factor
 
 class PanelSimulationModel:
     '''
     encompasses the panel
+
+    Right now, there's only one method that probably should just be static and we won't have to create an instance
+    of this object, but in case in the future, we need to have some state variables for the state of the solar panel,
+    we choose to keep the methods non-static.
     '''
 
-    def __init__(self):
-
-        return
 
     def getPowerAt(self, datetime):
-        daylight = SolarDayModel.getSolarOutput(datetime)
+        daylight = 15#kW/hr
         #do some compuation to convert to whatever the return unit should be...
         return daylight
-

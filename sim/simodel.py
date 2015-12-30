@@ -1,4 +1,4 @@
-from modules import ElectricalSimulationModel, MotorSimulationModel
+from modules import *
 from resources import ResourcePool
 
 __author__ = 'paul'
@@ -16,9 +16,13 @@ class SimCarModel:
     '''
     def __init__(self):
         self.respool = ResourcePool()
-        self.electricmodule = ElectricalSimulationModel(self.respool)
+        self.batterymodule = BatterySimulationModel()
         self.motormodule = MotorSimulationModel()
+        self.solarpanelmodule = PanelSimulationModel()
         self.distanceTraveled = 0#probably will put it in its own obj later.
+        self.masskg = 500
+
+        return
 
     def stepSim(self, currentdatetime, deltatime):
         '''
@@ -28,18 +32,32 @@ class SimCarModel:
         :param deltatime: in seconds
         :return:
         '''
-        print('stepping %s second in the simulation..' % deltatime)
-        #imma set a random velocity to hit for now, in meters per second.
-        targetvel = 26
+        targetvel = 26#debug value
+        self.respool.velocityms.value = targetvel
 
-        self.distanceTraveled += targetvel*deltatime
+        solarIn = self.solarpanelmodule.getPowerAt(currentdatetime)
+        motorRequirement = self.motormodule.getPowerReqForVel(self.respool.velocityms.value)
+        electricComponentRequirement = 3#describes the power used for lights and microprocessor and stuff. should have another module for this. too lazy for now.
+
+        #calculate all the powe requirements.
+        powerReq = 0
+        powerReq += motorRequirement
+        powerReq += electricComponentRequirement
+
+        powerIn = 0
+        powerIn += solarIn
+
+        batflow = self.batterymodule.batteryFlow(powerIn, powerReq, deltatime)
+        self.respool.batteryChargeAh.value += batflow
+        print('there is %s battery charge left right now.' % self.respool.batteryChargeAh.value)
+        self.distanceTraveled += self.respool.velocityms.value*deltatime
+
+        self.respool.recordResources(currentdatetime)
         return
 
     def isOutOfResoures(self):
-        '''
-        TODO
-        :return:
-        '''
+        if self.respool.batteryChargeAh.value < 0:
+            return True
         return False
 
     def setTargetPower(self, v):
@@ -48,10 +66,6 @@ class SimCarModel:
         :param v:
         :return:
         '''
-        return
-
-    def getHeuristic(self):
-        self.respool
         return
 
     def getVelocity(self):

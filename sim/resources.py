@@ -1,28 +1,34 @@
 __author__ = 'paul'
 
-class BatteryModel:
-    def __init__(self):
-        self.chargeAh = 20;#according to what i know at least, battery charge is measured in Ampere-hour.
+class CarResource:
+    def __init__(self,unit='N/A',initvalue=0):
+        self.unit = unit
+        self.value = initvalue
+        self.hist = [(0,0)]
         return
-
-    def flow(self, amp, deltatime):
+    def recordHist(self, dt):
         '''
-        amp in ampere, negative if flowing out, positive if flowing in.
-        deltatime in seconds.
+        uses the current value and the time provided to add an entry to the history.
         '''
-        #convert to hours.
-        hour = deltatime / 3600.0 #there are 3600 seconds in an hour.
-        delta = amp*deltatime
-        self.chargeAh = self.chargeAh + delta #gotta account for loss from efficiency later.
-        print('battery has %s Ah charge left' % self.chargeAh)
-        pass
-
+        self.hist.append((dt,self.value))
+        return
 
 class ResourcePool:
     '''
     defines the entire resource pool for the modeled car during one simulation iteration.
     '''
     def __init__(self):
-        self.battery = BatteryModel()
-
+        self.batteryChargeAh = CarResource('Ah', 2000)#according to what i know at least, battery charge is measured in Ampere-hour.
+        self.velocityms = CarResource('m/s', 0)
+        self.solarOutput = CarResource('kW/hr', 0)
+        self.batteryConnection = CarResource('', 0)#some regulations require you to remove your battery at a certain time.
         return
+
+    def recordResources(self, currentdatetime):
+        '''
+        to be called every update step in order to preserve data to be viewed and analyzed later.
+        '''
+        self.batteryChargeAh.recordHist(currentdatetime)
+        self.velocityms.recordHist(currentdatetime)
+        self.solarOutput.recordHist(currentdatetime)
+        self.batteryConnection.recordHist(currentdatetime)
