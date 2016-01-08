@@ -21,8 +21,13 @@ class SimCarModel:
         self.solarpanelmodule = PanelSimulationModel()
         self.distanceTraveled = 0#probably will put it in its own obj later.
         self.masskg = 500
-
+        self.initBehaviorStates()
         return
+
+    def initBehaviorStates(self):
+        self.behaviorState = CarDrivingBehavior()
+        return
+
 
     def stepSim(self, currentdatetime, deltatime):
         '''
@@ -32,27 +37,9 @@ class SimCarModel:
         :param deltatime: in seconds
         :return:
         '''
-        targetvel = 26#debug value
-        self.respool.velocityms.value = targetvel
-
-        solarIn = self.solarpanelmodule.getPowerAt(currentdatetime)
-        motorRequirement = self.motormodule.getPowerReqForVel(self.respool.velocityms.value)
-        electricComponentRequirement = 3#describes the power used for lights and microprocessor and stuff. should have another module for this. too lazy for now.
-
-        #calculate all the powe requirements.
-        powerReq = 0
-        powerReq += motorRequirement
-        powerReq += electricComponentRequirement
-
-        powerIn = 0
-        powerIn += solarIn
-
-        batflow = self.batterymodule.batteryFlow(powerIn, powerReq, deltatime)
-        self.respool.batteryChargeAh.value += batflow
-        print('there is %s battery charge left right now.' % self.respool.batteryChargeAh.value)
-        self.distanceTraveled += self.respool.velocityms.value*deltatime
-
         self.respool.recordResources(currentdatetime)
+        self.behaviorState.update(self, currentdatetime, deltatime)
+
         return
 
     def isOutOfResoures(self):
@@ -74,3 +61,72 @@ class SimCarModel:
         :return:
         '''
         return 40;
+
+class CarBehaviorState:
+    def __init__(self, name):
+        self.name = name
+        return
+
+    def update(self, carmodel, currentdatetime, deltatime):
+        '''
+        does the heavy lifting of the simulation.
+        based on whatever state this car is in, it will change its behavior and call on different models to achieve said behavior.
+        :param carmodel: the carmodel actually is the thing that contains a carstate, however, it needs to pass itself in, because this update method needs to access the different models contained in carmodel.
+        :return:
+        '''
+        return
+
+    def transition(self, carmodel):
+        '''
+        defines the behavior of transitioning to this state. sets all the appropriate state variables in carmodel (such as velocity, etc) to the proper values.
+        :param carmodel:
+        :return:
+        '''
+        return
+
+class CarDrivingBehavior(CarBehaviorState):
+
+    def __init__(self):
+        CarBehaviorState.__init__(self, 'driving')
+        return
+
+    def update(self, carmodel, currentdatetime, deltatime):
+        targetvel = 26#debug value
+        carmodel.respool.velocityms.value = targetvel
+
+        solarIn = carmodel.solarpanelmodule.getPowerAt(currentdatetime)
+        motorRequirement =  carmodel.motormodule.getPowerReqForVel(carmodel.respool.velocityms.value)
+        electricComponentRequirement = 3#describes the power used for lights and microprocessor and stuff. should have another module for this. too lazy for now.
+
+        #calculate all the powe requirements.
+        powerReq = 0
+        powerReq += motorRequirement
+        powerReq += electricComponentRequirement
+
+        powerIn = 0
+        powerIn += solarIn
+
+        batflow = carmodel.batterymodule.batteryFlow(powerIn, powerReq, deltatime)
+        carmodel.respool.batteryChargeAh.value += batflow
+        print('there is %s battery charge left right now.' % carmodel.respool.batteryChargeAh.value)
+        carmodel.distanceTraveled += carmodel.respool.velocityms.value*deltatime
+        return
+
+class CarChargingBehavior(CarBehaviorState):
+
+    def __init__(self):
+        CarBehaviorState.__init__(self, 'chargestop')
+        return
+
+    def update(self, carmodel, currentdatetime, deltatime):
+        print('in the charging behavior update method.')
+        return
+
+class CarStoppedNoChargeBehavior(CarBehaviorState):
+    def __init__(self):
+        CarBehaviorState.__init__(self, 'nochargestop')
+        return
+
+    def update(self, carmodel, currentdatetime, deltatime):
+        print('in the stopped behavior update method.')
+        return
