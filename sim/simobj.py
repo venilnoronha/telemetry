@@ -1,6 +1,7 @@
 __author__ = 'paul'
-from simodel import SimCarModel
+from simodel import SimCarModel, CarBehaviorParserFactory
 import datetime
+from rules import SimRule
 
 
 class SimulationObject:
@@ -27,8 +28,8 @@ class SimulationObject:
         return
 
     def initDebugDefaults(self):
-        self.totalRaceMeters = 50000
-        self.timeLimitSeconds = 60*60*24*3
+        self.totalRaceMeters = 5000000
+        self.timeLimitSeconds = 60*60*24*7
 
     def readStaticParameters(self):
         '''
@@ -79,8 +80,10 @@ class SimulationObject:
          any of the state of the car model.
          finally, we advance the current time with the deltatime.
         '''
+        '''
         if self.DEBUG:
             print('updating', self.iterationName, ', elapsed time:', self.getElapsedSeconds(), 'seconds')
+        '''
         self.carmodel.stepSim(self.currentdatetime, deltatime)
         self.rules.updateStateFromRules(self.currentdatetime, deltatime, self.carmodel)
         self.advancecurrentdatetime(deltatime)
@@ -126,7 +129,14 @@ class DailyItinerary:
     is the 'meat' of the strategy, and will be the factors we adjust (either manually or with random variations)
     '''
     def __init__(self):
-
+        #debug list of itinerary reflects the comments above.
+        self.list = [SimRule(datetime.time(hour=7), 'charging'),
+                     SimRule(datetime.time(hour=9), 'driving'),
+                     SimRule(datetime.time(hour=12), 'charging'),
+                     SimRule(datetime.time(hour=13), 'driving'),
+                     SimRule(datetime.time(hour=17), 'charging'),
+                     SimRule(datetime.time(hour=19), 'inactive')]
+        self.currentIndex = 0
         return
 
     def updateStateFromRules(self, currentdatetime, deltatime, carmodel):
@@ -135,4 +145,23 @@ class DailyItinerary:
 
         :return:
         '''
+
+        nextdatetime = currentdatetime+datetime.timedelta(seconds=deltatime)
+
+        #if we move onto the next day, then we should reset the itinerary to the start.
+        if nextdatetime.day > currentdatetime.day:
+            self.currentIndex = 0
+
+
+        if self.currentIndex < len(self.list):
+            nextrule = self.list[self.currentIndex]
+            if SimRule.shouldRuleHappen(currentdatetime.time(), nextdatetime.time(), nextrule.ruleTime):
+                behavior = CarBehaviorParserFactory.parseCreateCarBehavior(nextrule.statestring)
+                if behavior:
+                    carmodel.transitionBehavior(behavior)
+
+                self.currentIndex += 1
+
+
+
         return

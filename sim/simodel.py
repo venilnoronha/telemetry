@@ -25,7 +25,7 @@ class SimCarModel:
         return
 
     def initBehaviorStates(self):
-        self.behaviorState = CarDrivingBehavior()
+        self.behaviorState = CarBehaviorParserFactory.createInactiveBehavior()
         return
 
 
@@ -47,20 +47,9 @@ class SimCarModel:
             return True
         return False
 
-    def setTargetPower(self, v):
-        '''
-
-        :param v:
-        :return:
-        '''
+    def transitionBehavior(self, behavior):
+        self.behaviorState = behavior
         return
-
-    def getVelocity(self):
-        '''
-        Based on the initial conditions given, what velocity did we end up with?
-        :return:
-        '''
-        return 40;
 
 class CarBehaviorState:
     def __init__(self, name):
@@ -86,13 +75,14 @@ class CarBehaviorState:
 
 class CarDrivingBehavior(CarBehaviorState):
 
-    def __init__(self):
+    def __init__(self, velocity=0):
         CarBehaviorState.__init__(self, 'driving')
+        self.targetvelocity = velocity
         return
 
+
     def update(self, carmodel, currentdatetime, deltatime):
-        targetvel = 26#debug value
-        carmodel.respool.velocityms.value = targetvel
+        carmodel.respool.velocityms.value = self.targetvelocity
 
         solarIn = carmodel.solarpanelmodule.getPowerAt(currentdatetime)
         motorRequirement =  carmodel.motormodule.getPowerReqForVel(carmodel.respool.velocityms.value)
@@ -108,7 +98,8 @@ class CarDrivingBehavior(CarBehaviorState):
 
         batflow = carmodel.batterymodule.batteryFlow(powerIn, powerReq, deltatime)
         carmodel.respool.batteryChargeAh.value += batflow
-        print('there is %s battery charge left right now.' % carmodel.respool.batteryChargeAh.value)
+        print(currentdatetime.time())
+        print('driving, there is %s battery charge left right now.' % carmodel.respool.batteryChargeAh.value)
         carmodel.distanceTraveled += carmodel.respool.velocityms.value*deltatime
         return
 
@@ -125,6 +116,8 @@ class CarChargingBehavior(CarBehaviorState):
 
         batflow = carmodel.batterymodule.batteryFlow(powerIn, 0, deltatime)
         carmodel.respool.batteryChargeAh.value += batflow
+        print(currentdatetime.time())
+        print('charging, there is %s battery charge left right now.' % carmodel.respool.batteryChargeAh.value)
         return
 
 class CarStoppedNoChargeBehavior(CarBehaviorState):
@@ -136,3 +129,33 @@ class CarStoppedNoChargeBehavior(CarBehaviorState):
         print('in the stopped behavior update method.')
         print('we don\'t do anything here.')
         return
+
+class CarBehaviorParserFactory:
+    '''
+    Need some way of parsing a string (probably read from a JSON later on) into a real CarBehavior...
+    this in in the future will include what behavior it is, as well as additional relevant parameter like speed and other stuff.
+    all of the methods in here are static method (@classmethods) so you can access it anywhere.
+    '''
+    @classmethod
+    def parseCreateCarBehavior(cls, str):
+        if str == 'driving':
+            return cls.createDrivingBehavior(50)#all of these are just debug values for now. to be filled later.
+        elif str == 'charging':
+            return cls.createChargingBehavior()
+        elif str == 'inactive':
+            return cls.createInactiveBehavior()
+        else:
+            return None
+        return
+
+    @classmethod
+    def createDrivingBehavior(cls, velocity):
+        return CarDrivingBehavior(velocity)
+
+    @classmethod
+    def createChargingBehavior(cls):
+        return CarChargingBehavior()
+
+    @classmethod
+    def createInactiveBehavior(cls):
+        return CarStoppedNoChargeBehavior()

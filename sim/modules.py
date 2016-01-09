@@ -31,7 +31,7 @@ class MotorSimulationModel:
 
         #gotta do some shenanigans here with velocity-to-efficiency to figure out how much power we need, too.
         factor = .6
-        return 770
+        return 950
 
 class PanelSimulationModel:
     '''
@@ -44,6 +44,6 @@ class PanelSimulationModel:
 
 
     def getPowerAt(self, datetime):
-        power = 700#W(dc) which is V*A or J/s
+        power = 650#W(dc) which is V*A or J/s
         #do some compuation to convert to whatever the return unit should be...
         return power
