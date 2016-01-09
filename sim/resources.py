@@ -18,9 +18,9 @@ class ResourcePool:
     defines the entire resource pool for the modeled car during one simulation iteration.
     '''
     def __init__(self):
-        self.batteryChargeAh = CarResource('Ah', 2000)#according to what i know at least, battery charge is measured in Ampere-hour.
+        self.batteryChargeAh = CarResource('Ah', 20000)#according to what i know at least, battery charge is measured in Ampere-hour.
         self.velocityms = CarResource('m/s', 0)
-        self.solarOutput = CarResource('kW/hr', 0)
+        self.solarOutput = CarResource('W(dc)', 0)
         self.batteryConnection = CarResource('', 0)#some regulations require you to remove your battery at a certain time.
         return
 

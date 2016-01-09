@@ -119,7 +119,12 @@ class CarChargingBehavior(CarBehaviorState):
         return
 
     def update(self, carmodel, currentdatetime, deltatime):
-        print('in the charging behavior update method.')
+        solarIn = carmodel.solarpanelmodule.getPowerAt(currentdatetime)
+        powerIn = 0
+        powerIn += solarIn
+
+        batflow = carmodel.batterymodule.batteryFlow(powerIn, 0, deltatime)
+        carmodel.respool.batteryChargeAh.value += batflow
         return
 
 class CarStoppedNoChargeBehavior(CarBehaviorState):
@@ -129,4 +134,5 @@ class CarStoppedNoChargeBehavior(CarBehaviorState):
 
     def update(self, carmodel, currentdatetime, deltatime):
         print('in the stopped behavior update method.')
+        print('we don\'t do anything here.')
         return
