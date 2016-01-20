@@ -1,6 +1,7 @@
 __author__ = 'paul'
 from simodel import SimCarModel, CarBehaviorParserFactory
 import datetime
+import random
 from rules import SimRule
 
 
@@ -19,17 +20,18 @@ class SimulationObject:
     DEBUG = True
 
     def __init__(self, iname, startdatetime):
+        self.variations = SimVariationObject()
         self.iterationName = iname
         self.currentdatetime = startdatetime
         self.startdatetime = startdatetime
         self.carmodel = SimCarModel()
-        self.rules = DailyItinerary()
+        self.rules = DailyItinerary(self.variations)
         self.initDebugDefaults()
         return
 
     def initDebugDefaults(self):
-        self.totalRaceMeters = 5000000
-        self.timeLimitSeconds = 60*60*24*7
+        self.totalRaceMeters = 3000000 #test value of 3000km for now
+        self.timeLimitSeconds = 60*60*24*7 #test value of 7 days for now
 
     def readStaticParameters(self):
         '''
@@ -128,16 +130,12 @@ class DailyItinerary:
     The daily itinerary as well as the rule-modules inside the itinerary (how we choose the speed, what we do at what time, etc)
     is the 'meat' of the strategy, and will be the factors we adjust (either manually or with random variations)
     '''
-    def __init__(self):
+    def __init__(self, variedobj):
         #debug list of itinerary reflects the comments above.
-        self.list = [SimRule(datetime.time(hour=7), 'charging'),
-                     SimRule(datetime.time(hour=9), 'driving'),
-                     SimRule(datetime.time(hour=12), 'charging'),
-                     SimRule(datetime.time(hour=13), 'driving'),
-                     SimRule(datetime.time(hour=17), 'charging'),
-                     SimRule(datetime.time(hour=19), 'inactive')]
+        self.list = variedobj.getVariedItinerary()
         self.currentIndex = 0
         return
+
 
     def updateStateFromRules(self, currentdatetime, deltatime, carmodel):
         '''
@@ -165,3 +163,51 @@ class DailyItinerary:
 
 
         return
+
+class SimVariationObject:
+    '''
+    This object defines all the variable and some non-variable parameters within the racing simulation.
+     For example, the timing of the itinerary,
+     the parameters involved in determining the velocity,
+     but also non-varying parameters (that might vary depending on the race we enter) like:
+     starting battery charge,
+     race distance,
+     etc.
+    '''
+    def __init__(self):
+        self.itinerary = [VariedItineraryItem('charging', 7),
+                             VariedItineraryItem('driving', 9),
+                             VariedItineraryItem('charging', 12),
+                             VariedItineraryItem('driving', 13),
+                             VariedItineraryItem('charging', 17),
+                             VariedItineraryItem('inactive', 19)]
+
+        return
+
+    def getVariedItinerary(self):
+        rv = []
+        for item in self.itinerary:
+            hr = item.seedtime
+            hr += random.uniform(-item.variation, item.variation)
+            ihour = int(hr)
+            min = hr-ihour
+            min *= 60
+            min = int(min)
+            rv.append(SimRule(datetime.time(hour=ihour, minute=min), item.behaviorname))
+        return rv
+
+class VariedItineraryItem:
+    def __init__(self, behaviorname, seedtime, variation=1.0):
+        '''
+
+        :param behaviorname: serialized string for the behavior. for example, 'driving' for the Driving Car Behavior.
+        :param seedtime: the mid-point of time for the range. for example, 5:30pm will be 17.5
+        :param variation: the variation on either side of the specified seed. in hours.
+        :return:
+        '''
+        self.behaviorname = behaviorname
+        self.seedtime = seedtime
+        self.variation = variation
+
+        return
+

@@ -4,10 +4,12 @@ from simobj import SimulationObject
 import datetime
 
 def runASimIteration():
-    s = SimulationObject('test sim', datetime.datetime.today())
+    racestart = datetime.datetime.today()
+    s = SimulationObject('test sim', racestart)
     rv = s.run()
     print('race finished with return message', rv)
     return
+
 
 #dummy for testing
 if __name__ == '__main__':

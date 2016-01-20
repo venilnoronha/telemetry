@@ -30,8 +30,8 @@ class MotorSimulationModel:
         '''
 
         #gotta do some shenanigans here with velocity-to-efficiency to figure out how much power we need, too.
-        factor = .6
-        return 950
+        factor = 40
+        return vel * factor
 
 class PanelSimulationModel:
     '''

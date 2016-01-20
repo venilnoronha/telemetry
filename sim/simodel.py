@@ -1,5 +1,6 @@
 from modules import *
 from resources import ResourcePool
+import random
 
 __author__ = 'paul'
 
@@ -139,7 +140,10 @@ class CarBehaviorParserFactory:
     @classmethod
     def parseCreateCarBehavior(cls, str):
         if str == 'driving':
-            return cls.createDrivingBehavior(50)#all of these are just debug values for now. to be filled later.
+            #for now, i'm doing a random velocity here. in the future, we ned to figure out a better way to do so.
+            target = 26
+            rand = random.randrange(-5,5)
+            return cls.createDrivingBehavior(target + rand)
         elif str == 'charging':
             return cls.createChargingBehavior()
         elif str == 'inactive':
