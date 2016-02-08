@@ -24,7 +24,7 @@ class SimulationObject:
         self.iterationName = iname
         self.currentdatetime = startdatetime
         self.startdatetime = startdatetime
-        self.carmodel = SimCarModel()
+        self.carmodel = SimCarModel(startdatetime)
         self.rules = DailyItinerary(self.variations)
         self.initDebugDefaults()
         return

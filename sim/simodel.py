@@ -15,7 +15,8 @@ class SimCarModel:
     etc.
     relevant resources should also have a history of values per simulation run so that they can be analyzed.
     '''
-    def __init__(self):
+    def __init__(self, startedatetime):
+        self.startdatetime = startedatetime
         self.respool = ResourcePool()
         self.batterymodule = BatterySimulationModel()
         self.motormodule = MotorSimulationModel()
@@ -38,7 +39,7 @@ class SimCarModel:
         :param deltatime: in seconds
         :return:
         '''
-        self.respool.recordResources(currentdatetime)
+        self.respool.recordResources(self.getElapsedTime(currentdatetime))
         self.behaviorState.update(self, currentdatetime, deltatime)
 
         return
@@ -51,6 +52,11 @@ class SimCarModel:
     def transitionBehavior(self, behavior):
         self.behaviorState = behavior
         return
+
+    def getElapsedTime(self, currenttime):
+        diff = currenttime - self.startdatetime
+
+        return diff.total_seconds()
 
 class CarBehaviorState:
     def __init__(self, name):

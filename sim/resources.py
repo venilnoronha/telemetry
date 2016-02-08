@@ -6,12 +6,30 @@ class CarResource:
         self.value = initvalue
         self.hist = [(0,0)]
         return
-    def recordHist(self, dt):
+    def recordHist(self, elapsedtime):
         '''
         uses the current value and the time provided to add an entry to the history.
         '''
-        self.hist.append((dt,self.value))
+        self.hist.append((elapsedtime,self.value))
         return
+
+    def getMinMax(self):
+        maxx = 0
+        minx = 0
+        maxy = 0
+        miny = 0
+        for pair in self.hist:
+            x = pair[0]
+            y = pair[1]
+            if x > maxx:
+                maxx = x
+            if x < minx:
+                minx = x
+            if y > maxy:
+                maxy = y
+            if y < miny:
+                miny = y
+        return (minx, maxx, miny, maxy)
 
 class ResourcePool:
     '''
@@ -24,11 +42,11 @@ class ResourcePool:
         self.batteryConnection = CarResource('', 0)#some regulations require you to remove your battery at a certain time.
         return
 
-    def recordResources(self, currentdatetime):
+    def recordResources(self, elapsedtime):
         '''
         to be called every update step in order to preserve data to be viewed and analyzed later.
         '''
-        self.batteryChargeAh.recordHist(currentdatetime)
-        self.velocityms.recordHist(currentdatetime)
-        self.solarOutput.recordHist(currentdatetime)
-        self.batteryConnection.recordHist(currentdatetime)
+        self.batteryChargeAh.recordHist(elapsedtime)
+        self.velocityms.recordHist(elapsedtime)
+        self.solarOutput.recordHist(elapsedtime)
+        self.batteryConnection.recordHist(elapsedtime)
