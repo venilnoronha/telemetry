@@ -1,26 +1,54 @@
 __author__ = 'paul'
 from kivy.uix.boxlayout import BoxLayout
 import datetime
-from simobj import SimulationObject
+from sim.simobj import SimulationObject
 from kivy.uix.button import Button
+from kivy.uix.label import Label
 
 class SimMainScreen(BoxLayout):
-    def __init__(self, parentapp, **kwargs):
-        super (SimMainScreen, self).__init__(**kwargs)
+    def __init__(self, parentapp):
+        super (SimMainScreen, self).__init__(orientation='vertical')
         self.parentapp = parentapp
 
-        startbutton = Button(text='Begin Simulation...', font_size=14)
+        welcometext = Label(text='Welcome to SC/SC Simluation')
+        self.add_widget(welcometext)
 
-
-        startbutton.bind(on_press=self.startbuttoncallback)
-        self.add_widget(startbutton)
+        choices = self.buildChoices()
+        self.add_widget(choices)
         pass
 
+    def buildChoices(self):
+        choices = BoxLayout(orientation='horizontal')
+        choices.padding=50
+        choices.spacing=20
+
+        loadbutton = Button(text='Load a Plan...')
+        loadbutton.bind(on_press=self.loadbuttoncallback)
+        choices.add_widget(loadbutton)
+
+        startbutton = Button(text='DEBUG: Run It!', font_size=14)
+        startbutton.bind(on_press=self.startbuttoncallback)
+        choices.add_widget(startbutton)
+
+
+        resultbutton = Button(text='Load a Saved Result...', font_size=14)
+        resultbutton.bind(on_press=self.resultbuttoncallback)
+        choices.add_widget(resultbutton)
+        return choices
+
+    def resultbuttoncallback(self, instance):
+        print('program should be able to load previous result dumps from disk.')
+        return
+
+    def loadbuttoncallback(self, instance):
+        print('rakesh insert your magic here')
+        return
 
     def startbuttoncallback(self, instance):
         print('starting simulation...')
         simobj = self.runASim()
         self.parentapp.showResult(simobj)
+        return
 
 
     def runASim(self):
