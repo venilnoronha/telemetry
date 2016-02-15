@@ -4,16 +4,19 @@ from graphlib import Graph, MeshLinePlot
 
 
 class SimResultScreen(BoxLayout):
-    def __init__(self, parentapp, simobj, **kwargs):
-        super (SimResultScreen, self).__init__(**kwargs)
+    def __init__(self, parentapp, simobj):
+        super (SimResultScreen, self).__init__(orientation='vertical')
         self.parentapp = parentapp
         self.showGraph(simobj)
 
     def showGraph(self, simobj):
-            respool = simobj.carmodel.respool
-            bat = respool.batteryChargeAh
-            g = SimUnitPlot('test', bat)
-            self.add_widget(g)
+        respool = simobj.carmodel.respool
+        bat = respool.batteryChargeAh
+        g = SimUnitPlot('battery charge', bat)
+        self.add_widget(g)
+        v = respool.velocityms
+        gv = SimUnitPlot('velocity', v)
+        self.add_widget(gv)
 
 
 
@@ -30,7 +33,7 @@ class SimUnitPlot(Graph):
         self.unittype='test'
         tempplotdata = solarres.hist
 
-        plot = MeshLinePlot()
+        plot = MeshLinePlot(color=[1,0,0,1])
         plot.points = tempplotdata
         self.add_plot(plot)
 

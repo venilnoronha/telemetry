@@ -123,6 +123,7 @@ class CarChargingBehavior(CarBehaviorState):
 
         batflow = carmodel.batterymodule.batteryFlow(powerIn, 0, deltatime)
         carmodel.respool.batteryChargeAh.value += batflow
+        carmodel.respool.velocityms.value = 0
         print(currentdatetime.time())
         print('charging, there is %s battery charge left right now.' % carmodel.respool.batteryChargeAh.value)
         return
@@ -133,8 +134,7 @@ class CarStoppedNoChargeBehavior(CarBehaviorState):
         return
 
     def update(self, carmodel, currentdatetime, deltatime):
-        print('in the stopped behavior update method.')
-        print('we don\'t do anything here.')
+        carmodel.respool.velocityms.value = 0
         return
 
 class CarBehaviorParserFactory:
