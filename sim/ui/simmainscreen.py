@@ -4,6 +4,8 @@ import datetime
 from sim.simobj import SimulationObject
 from kivy.uix.button import Button
 from kivy.uix.label import Label
+from kivy.uix.popup import Popup
+from simparameditor import ParamLoadDialog
 
 class SimMainScreen(BoxLayout):
     def __init__(self, parentapp):
@@ -42,6 +44,10 @@ class SimMainScreen(BoxLayout):
 
     def loadbuttoncallback(self, instance):
         print('rakesh insert your magic here')
+        content = ParamLoadDialog()#load=self.loadparam, cancel=self.dismiss_popup)
+        self._popup = Popup(title="Load file", content=content,
+                            size_hint=(0.9, 0.9))
+        self._popup.open()
         return
 
     def startbuttoncallback(self, instance):
@@ -50,6 +56,13 @@ class SimMainScreen(BoxLayout):
         self.parentapp.showResult(simobj)
         return
 
+    def loadparam(self, path, filename):
+        print('we got a load')
+        return
+
+    def dismiss_popup(self):
+        self._popup.dismiss()
+        return
 
     def runASim(self):
         racestart = datetime.datetime.today()

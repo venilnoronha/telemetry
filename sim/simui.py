@@ -7,6 +7,7 @@ from kivy.uix.boxlayout import BoxLayout
 from simobj import SimulationObject
 from ui.simmainscreen import SimMainScreen
 from ui.simresultscreen import SimResultScreen
+from kivy.uix.popup import Popup
 
 import sys
 
