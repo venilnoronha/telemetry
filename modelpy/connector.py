@@ -6,9 +6,10 @@ import model
 
 
 class SolarCarConnector:
-    HOST="localhost";
-    PORT=13000;
-    message="";
+    HOST="localhost"
+    PORT=13000
+    message=""
+    keepthreading=True
 
     """
     this class handles actually making a connection to the simulation or the actual microprocessor.
@@ -34,8 +35,8 @@ class SolarCarConnector:
 
     def close(self):
 
+        self.keepthreading=False
         self.s.close()
-        self.message="stop"
 
     def startserv(self):
         '''
@@ -44,6 +45,7 @@ class SolarCarConnector:
         do NOT block the main UI with this.
         :return:
         '''
+        self.keepthreading=True
         print 'starting serv'
         print 'please run SimData'
         print 'startserv running from graphs.py'
@@ -70,16 +72,19 @@ class SolarCarConnector:
         :return:
         '''
 
-        while 1:
+        while self.keepthreading:
+
             self.message=sock.recv(4096)
             if not self.message:
                 continue
             if (self.message=="quit"):
                 print("Disconnected, restarting server")
+                self.keepthreading=False
                 sock.close()
                 self.startserv()
                 break
             if(self.message=="stop"):
+                self.keepthreading=False
                 print("Stopped")
                 sock.close()
                 break
