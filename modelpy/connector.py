@@ -6,10 +6,11 @@ import model
 
 
 class SolarCarConnector:
-    HOST="localhost"
+    HOST="10.120.57.167"
     PORT=13000
     message=""
     keepthreading=True
+    NUMGRAPHS=6
 
     """
     this class handles actually making a connection to the simulation or the actual microprocessor.
@@ -73,8 +74,8 @@ class SolarCarConnector:
         '''
 
         while self.keepthreading:
-
             self.message=sock.recv(4096)
+            #print self.message
             if not self.message:
                 continue
             if (self.message=="quit"):
@@ -89,13 +90,15 @@ class SolarCarConnector:
                 sock.close()
                 break
             str=self.message.split(';')
-            #print str
-            str2=[[0 for x in range(2)] for x in range(len(str))]
-            i=0
-            for s in str:
-                str2[i][0], str2[i][1]=s.split(':')
-                i=i+1
-            self.updateModel(str2)
+            if(len(str)<=self.NUMGRAPHS):
+                str2=[[0 for x in range(2)] for x in range(len(str))]
+                i=0
+                for s in str:
+                    str2[i][0], str2[i][1]=s.split(':')
+                    i=i+1
+                self.updateModel(str2)
+            else:
+                print "error: recieved message: "+ self.message
         pass
 
     def messageIsValid(self,val=[]):
