@@ -6,12 +6,12 @@ import model
 
 
 class SolarCarConnector:
-    HOST="10.120.57.167"
+    HOST="localhost"
     PORT=13000
     message=""
     keepthreading=True
     NUMGRAPHS=6
-
+    TIMEOUT=15
     """
     this class handles actually making a connection to the simulation or the actual microprocessor.
     """
@@ -63,7 +63,7 @@ class SolarCarConnector:
         conn, addr = self.s.accept()
         print 'Connected with ' + addr[0] + ':' + str(addr[1])
 
-        self.poll(conn);
+        self.poll(conn)
         pass
 
     def poll(self,sock):
@@ -72,9 +72,14 @@ class SolarCarConnector:
         should be called within thread in startserv
         :return:
         '''
-
+        sock.setTimeout(self.TIMEOUT)
         while self.keepthreading:
-            self.message=sock.recv(4096)
+            sock.sendall("poll")
+            try:
+                self.message=sock.recv(128)
+            except socket.timeout:
+                print('Connection timed out. Disconnected')
+                self.message="quit"
             #print self.message
             if not self.message:
                 continue

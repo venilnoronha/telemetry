@@ -56,23 +56,25 @@ def quit():
 
 
 def get_data():
-    global ident
-    global isConnected
-    a = str(w1.get())
-    b = str(w2.get())
-    c = str(w3.get())
-    d = str(w4.get())
-    e = str(w5.get())
-    f = str(w6.get())
-    data = "cabintemp:" + a + ";" + "solarvolt:" + b + ";" "batvolt:" + c + ";" + "batterytemp:" + d + ";" + "motorrpm:" + e + ";" + "motortemp:" + f
-    try:
-       UDPSock.sendall(data)
-    except:
-        print("Sending data failed. Closing connection")
-        UDPSock.close()
-        isConnected=False
-        return
-    ident=master.after(66, get_data)
+	polling=UDPSock.recv(16)
+	if(polling=="poll"):
+		global ident
+		global isConnected
+		a = str(w1.get())
+		b = str(w2.get())
+		c = str(w3.get())
+		d = str(w4.get())
+		e = str(w5.get())
+		f = str(w6.get())
+		data = "cabintemp:" + a + ";" + "solarvolt:" + b + ";" "batvolt:" + c + ";" + "batterytemp:" + d + ";" + "motorrpm:" + e + ";" + "motortemp:" + f
+		try:
+		   UDPSock.sendall(data)
+		except:
+			print("Sending data failed. Closing connection")
+			UDPSock.close()
+			isConnected=False
+			return
+		ident=master.after(66, get_data)
 
 #Slider Stuff
 master = Tk()
