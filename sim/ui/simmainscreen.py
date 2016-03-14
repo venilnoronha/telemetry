@@ -25,9 +25,13 @@ class SimMainScreen(BoxLayout):
         choices.padding=50
         choices.spacing=20
 
-        loadbutton = Button(text='Load a Plan...')
+        loadbutton = Button(text='Load a Strategy...')
         loadbutton.bind(on_press=self.loadbuttoncallback)
         choices.add_widget(loadbutton)
+
+        newbutton = Button(text='Create a New Strategy')
+        newbutton.bind(on_press=self.newbuttoncallback)
+        choices.add_widget(newbutton)
 
         startbutton = Button(text='DEBUG: Run It!', font_size=14)
         startbutton.bind(on_press=self.startbuttoncallback)
@@ -42,6 +46,11 @@ class SimMainScreen(BoxLayout):
     def resultbuttoncallback(self, instance):
         print('program should be able to load previous result dumps from disk.')
         return
+
+    def newbuttoncallback(self, instance):
+        print('creating a new strategy...')
+        self.parentapp.showEditorNew()
+
 
     def loadbuttoncallback(self, instance):
 
