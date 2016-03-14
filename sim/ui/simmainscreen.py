@@ -6,6 +6,7 @@ from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 from simparameditor import ParamLoadDialog
+from sim.strategyloadingediting import StrategyOpener
 
 class SimMainScreen(BoxLayout):
     def __init__(self, parentapp):
@@ -43,11 +44,12 @@ class SimMainScreen(BoxLayout):
         return
 
     def loadbuttoncallback(self, instance):
-        print('rakesh insert your magic here')
-        content = ParamLoadDialog()#load=self.loadparam, cancel=self.dismiss_popup)
+
+        content = ParamLoadDialog(self.loadparam)#load=self.loadparam, cancel=self.dismiss_popup)
         self._popup = Popup(title="Load file", content=content,
                             size_hint=(0.9, 0.9))
         self._popup.open()
+        content.setselfpop(self._popup)
         return
 
     def startbuttoncallback(self, instance):
@@ -57,7 +59,8 @@ class SimMainScreen(BoxLayout):
         return
 
     def loadparam(self, path, filename):
-        print('we got a load')
+        print('rakesh insert your magic here')
+
         return
 
     def dismiss_popup(self):

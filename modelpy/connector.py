@@ -6,7 +6,7 @@ import model
 
 
 class SolarCarConnector:
-    HOST="localhost";
+    HOST="192.168.0.100";
     PORT=13000;
     message="";
 
