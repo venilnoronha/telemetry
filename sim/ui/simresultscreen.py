@@ -1,5 +1,6 @@
 __author__ = 'paul'
 from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.button import Button
 from graphlib import Graph, MeshLinePlot
 
 
@@ -7,16 +8,24 @@ class SimResultScreen(BoxLayout):
     def __init__(self, parentapp, simobj):
         super (SimResultScreen, self).__init__(orientation='vertical')
         self.parentapp = parentapp
-        self.showGraph(simobj)
+        graphmodule = self.getGraphModule(simobj)
+        self.add_widget(graphmodule)
 
-    def showGraph(self, simobj):
+        bottombar = BoxLayout(orientation='horizontal',size_hint=(1.0,0.1))
+        datadumpbutton = Button(text='Save Result...')
+        seeparameter = Button(text='Edit Strategy...')
+        bottombar.add_widget(seeparameter)
+        bottombar.add_widget(datadumpbutton)
+        self.add_widget(bottombar)
+
+    def getGraphModule(self, simobj):
         respool = simobj.carmodel.respool
         bat = respool.batteryChargeAh
         g = SimUnitPlot('battery charge', bat)
-        self.add_widget(g)
+        #self.add_widget(g)
         v = respool.velocityms
         gv = SimUnitPlot('velocity', v)
-        self.add_widget(gv)
+        return g
 
 
 
