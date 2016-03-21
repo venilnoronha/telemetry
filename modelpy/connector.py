@@ -3,15 +3,17 @@ import socket   #for sockets
 import sys  #for exit
 import threading
 import model
+import time
 
 
 class SolarCarConnector:
-    HOST="localhost"
+    HOST="207.151.60.219"
     PORT=13000
     message=""
     keepthreading=True
     NUMGRAPHS=6
     TIMEOUT=15
+    SAMPLESPEED_S=0.1
     """
     this class handles actually making a connection to the simulation or the actual microprocessor.
     """
@@ -72,7 +74,7 @@ class SolarCarConnector:
         should be called within thread in startserv
         :return:
         '''
-        sock.setTimeout(self.TIMEOUT)
+        sock.settimeout(self.TIMEOUT)
         while self.keepthreading:
             sock.sendall("poll")
             try:
@@ -104,6 +106,7 @@ class SolarCarConnector:
                 self.updateModel(str2)
             else:
                 print "error: recieved message: "+ self.message
+            time.sleep(self.SAMPLESPEED_S)
         pass
 
     def messageIsValid(self,val=[]):

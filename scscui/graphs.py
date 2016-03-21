@@ -46,7 +46,7 @@ class GraphView(BoxLayout):
         pass
 
     def startupdating(self):
-        Clock.schedule_interval(self.checkPlots, 1 / 30.)
+        Clock.schedule_interval(self.checkPlots, 1/60)
         return
 
     def checkPlots(self, *args):
@@ -111,7 +111,7 @@ class SingleUnitPlot(Graph):
         return self.isPlotted
 
     def startupdating(self):
-        Clock.schedule_interval(self.updatePlots, 1 / 30.)
+        Clock.schedule_interval(self.updatePlots, 1 / 20.)
         return
 
     def checkUnitType(self, unittype):
