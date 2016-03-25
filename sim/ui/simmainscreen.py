@@ -7,6 +7,7 @@ from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 from simparameditor import ParamLoadDialog
 from sim.strategyloadingediting import StrategyOpener
+from sim.strategyobject import StrategyObject
 
 class SimMainScreen(BoxLayout):
     def __init__(self, parentapp):
@@ -49,6 +50,8 @@ class SimMainScreen(BoxLayout):
 
     def newbuttoncallback(self, instance):
         print('creating a new strategy...')
+        teststrat = StrategyObject()
+        teststrat.serializeStrategy('testserialize.json')
         self.parentapp.showEditorNew()
 
 
