@@ -10,5 +10,5 @@ class StrategyObject:
     def serializeStrategy(self, filepath):
         with open(filepath, 'w') as fp:
             json.dump(self.__dict__,fp,sort_keys=True,indent=4,separators=(',',':'))
-            
+
 

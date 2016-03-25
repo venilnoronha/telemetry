@@ -3,12 +3,18 @@ import socket   #for sockets
 import sys  #for exit
 import threading
 import model
+import time
 
 
 class SolarCarConnector:
-    HOST="192.168.0.100";
-    PORT=13000;
-    message="";
+
+    HOST="207.151.60.219"
+    PORT=13000
+    message=""
+    keepthreading=True
+    NUMGRAPHS=6
+    TIMEOUT=15
+    SAMPLESPEED_S=0.1
 
     """
     this class handles actually making a connection to the simulation or the actual microprocessor.
@@ -34,8 +40,8 @@ class SolarCarConnector:
 
     def close(self):
 
+        self.keepthreading=False
         self.s.close()
-        self.message="stop"
 
     def startserv(self):
         '''
@@ -44,6 +50,7 @@ class SolarCarConnector:
         do NOT block the main UI with this.
         :return:
         '''
+        self.keepthreading=True
         print 'starting serv'
         print 'please run SimData'
         print 'startserv running from graphs.py'
@@ -60,7 +67,7 @@ class SolarCarConnector:
         conn, addr = self.s.accept()
         print 'Connected with ' + addr[0] + ':' + str(addr[1])
 
-        self.poll(conn);
+        self.poll(conn)
         pass
 
     def poll(self,sock):
@@ -69,28 +76,39 @@ class SolarCarConnector:
         should be called within thread in startserv
         :return:
         '''
-
-        while 1:
-            self.message=sock.recv(4096)
+        sock.settimeout(self.TIMEOUT)
+        while self.keepthreading:
+            sock.sendall("poll")
+            try:
+                self.message=sock.recv(128)
+            except socket.timeout:
+                print('Connection timed out. Disconnected')
+                self.message="quit"
+            #print self.message
             if not self.message:
                 continue
             if (self.message=="quit"):
                 print("Disconnected, restarting server")
+                self.keepthreading=False
                 sock.close()
                 self.startserv()
                 break
             if(self.message=="stop"):
+                self.keepthreading=False
                 print("Stopped")
                 sock.close()
                 break
             str=self.message.split(';')
-            #print str
-            str2=[[0 for x in range(2)] for x in range(len(str))]
-            i=0
-            for s in str:
-                str2[i][0], str2[i][1]=s.split(':')
-                i=i+1
-            self.updateModel(str2)
+            if(len(str)<=self.NUMGRAPHS):
+                str2=[[0 for x in range(2)] for x in range(len(str))]
+                i=0
+                for s in str:
+                    str2[i][0], str2[i][1]=s.split(':')
+                    i=i+1
+                self.updateModel(str2)
+            else:
+                print "error: recieved message: "+ self.message
+            time.sleep(self.SAMPLESPEED_S)
         pass
 
     def messageIsValid(self,val=[]):
