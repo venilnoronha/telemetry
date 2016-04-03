@@ -4,16 +4,19 @@ import sys  #for exit
 import threading
 import model
 import time
-
+from kivy.clock import Clock
+import datetime
 
 class SolarCarConnector:
-    HOST="207.151.60.219"
+    HOST="10.120.60.40"
     PORT=13000
     message=""
     keepthreading=True
     NUMGRAPHS=6
     TIMEOUT=15
-    SAMPLESPEED_S=0.1
+    SAMPLESPEED_S=0.02
+    str=""
+
     """
     this class handles actually making a connection to the simulation or the actual microprocessor.
     """
@@ -64,8 +67,9 @@ class SolarCarConnector:
         print 'Socket now listening'
         conn, addr = self.s.accept()
         print 'Connected with ' + addr[0] + ':' + str(addr[1])
-
+        self.readstringevent= Clock.schedule_interval(self.updateReadString, 1 / 10.)
         self.poll(conn)
+
         pass
 
     def poll(self,sock):
@@ -75,6 +79,7 @@ class SolarCarConnector:
         :return:
         '''
         sock.settimeout(self.TIMEOUT)
+
         while self.keepthreading:
             sock.sendall("poll")
             try:
@@ -89,6 +94,7 @@ class SolarCarConnector:
                 print("Disconnected, restarting server")
                 self.keepthreading=False
                 sock.close()
+                Clock.unschedule(self.readstringevent)
                 self.startserv()
                 break
             if(self.message=="stop"):
@@ -96,18 +102,24 @@ class SolarCarConnector:
                 print("Stopped")
                 sock.close()
                 break
-            str=self.message.split(';')
-            if(len(str)<=self.NUMGRAPHS):
-                str2=[[0 for x in range(2)] for x in range(len(str))]
+            self.str=self.message.split(';')
+            time.sleep(self.SAMPLESPEED_S)
+
+        print("unscheduled")
+        pass
+
+    def updateReadString(self, *args):
+        if(len(self.str)!=0):
+            if(len(self.str)<=self.NUMGRAPHS):
+                str2=[[0 for x in range(2)] for x in range(len(self.str))]
                 i=0
-                for s in str:
+                for s in self.str:
                     str2[i][0], str2[i][1]=s.split(':')
                     i=i+1
                 self.updateModel(str2)
             else:
                 print "error: recieved message: "+ self.message
-            time.sleep(self.SAMPLESPEED_S)
-        pass
+        return
 
     def messageIsValid(self,val=[]):
         if val[0] in model.datalist.keys():
@@ -121,16 +133,6 @@ class SolarCarConnector:
             print('Invalid key:')
             return False
 
-    def parsemessage(self, msg):
-        '''
-        code to parse message
-        '''
-        str1=[]
-        str1=msg.split(';')
-        for item in str1:
-            print item
-        return
-
     def updateModel(self, info):
         '''
 
@@ -140,4 +142,3 @@ class SolarCarConnector:
             if(self.messageIsValid(info[i])):
                 model.datalist[info[i][0]].setCurrentVal(int(info[i][1]))
         pass
-
