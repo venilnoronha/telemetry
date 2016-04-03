@@ -6,6 +6,8 @@ from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 from simparameditor import ParamLoadDialog
+from sim.strategyloadingediting import StrategyOpener
+from sim.strategyobject import StrategyObject
 
 class SimMainScreen(BoxLayout):
     def __init__(self, parentapp):
@@ -24,9 +26,13 @@ class SimMainScreen(BoxLayout):
         choices.padding=50
         choices.spacing=20
 
-        loadbutton = Button(text='Load a Plan...')
+        loadbutton = Button(text='Load a Strategy...')
         loadbutton.bind(on_press=self.loadbuttoncallback)
         choices.add_widget(loadbutton)
+
+        newbutton = Button(text='Create a New Strategy')
+        newbutton.bind(on_press=self.newbuttoncallback)
+        choices.add_widget(newbutton)
 
         startbutton = Button(text='DEBUG: Run It!', font_size=14)
         startbutton.bind(on_press=self.startbuttoncallback)
@@ -42,12 +48,20 @@ class SimMainScreen(BoxLayout):
         print('program should be able to load previous result dumps from disk.')
         return
 
+    def newbuttoncallback(self, instance):
+        print('creating a new strategy...')
+        teststrat = StrategyObject()
+        teststrat.serializeStrategy('testserialize.json')
+        self.parentapp.showEditorNew()
+
+
     def loadbuttoncallback(self, instance):
-        print('rakesh insert your magic here')
-        content = ParamLoadDialog()#load=self.loadparam, cancel=self.dismiss_popup)
+
+        content = ParamLoadDialog(self.loadparam)#load=self.loadparam, cancel=self.dismiss_popup)
         self._popup = Popup(title="Load file", content=content,
                             size_hint=(0.9, 0.9))
         self._popup.open()
+        content.setselfpop(self._popup)
         return
 
     def startbuttoncallback(self, instance):
@@ -57,7 +71,8 @@ class SimMainScreen(BoxLayout):
         return
 
     def loadparam(self, path, filename):
-        print('we got a load')
+        print('rakesh insert your magic here')
+
         return
 
     def dismiss_popup(self):
