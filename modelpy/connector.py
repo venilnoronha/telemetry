@@ -94,7 +94,7 @@ class SolarCarConnector:
                 print("Disconnected, restarting server")
                 self.keepthreading=False
                 sock.close()
-                Clock.unschedule(self.readstringevent)
+                #Clock.unschedule(self.readstringevent)
                 self.startserv()
                 break
             if(self.message=="stop"):
