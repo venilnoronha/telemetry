@@ -144,12 +144,12 @@ class CarBehaviorParserFactory:
     all of the methods in here are static method (@classmethods) so you can access it anywhere.
     '''
     @classmethod
-    def parseCreateCarBehavior(cls, str):
+    def parseCreateCarBehavior(cls, str, paramobj):
         if str == 'driving':
             #for now, i'm doing a random velocity here. in the future, we ned to figure out a better way to do so.
-            target = 26
-            rand = random.randrange(-5,5)
-            return cls.createDrivingBehavior(target + rand)
+            target = paramobj.targetvelocity
+
+            return cls.createDrivingBehavior(target)
         elif str == 'charging':
             return cls.createChargingBehavior()
         elif str == 'inactive':
