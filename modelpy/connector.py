@@ -8,7 +8,7 @@ from kivy.clock import Clock
 import datetime
 
 class SolarCarConnector:
-    HOST="10.120.52.188"
+    HOST="localhost"
     PORT=13000
     message=""
     keepthreading=True
@@ -81,11 +81,13 @@ class SolarCarConnector:
         sock.settimeout(self.TIMEOUT)
 
         while self.keepthreading:
-            sock.sendall("poll")
             try:
+                sock.sendall("poll")
                 self.message=sock.recv(128)
             except socket.timeout:
                 print('Connection timed out. Disconnected')
+                self.message="quit"
+            except socket.error:
                 self.message="quit"
             #print self.message
             if not self.message:
