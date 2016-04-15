@@ -98,6 +98,7 @@ class SuperDataModel:
         self.val=value
         pass
 
+
     def getUnit(self):
         return self.unit
 
