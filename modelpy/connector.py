@@ -8,7 +8,7 @@ from kivy.clock import Clock
 import datetime
 
 class SolarCarConnector:
-    HOST="10.120.62.21"
+    HOST="localhost"
     PORT=13000
     message=""
     keepthreading=True
