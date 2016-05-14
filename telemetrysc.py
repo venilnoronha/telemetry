@@ -35,7 +35,7 @@ class MyApp(App):
         global connect
         connect.close()
         print("Successfully closed")
-        sys.exit();
+        sys.exit()
         #App.stop()
 
 if __name__ == '__main__':
