@@ -14,7 +14,7 @@ main entry point to our program.
 """
 class MyApp(App):
     isConnected=False
-    connect=object;
+    connect=object
     def build(self):
         global connect
         mainview = BoxLayout(orientation='horizontal')
@@ -35,7 +35,7 @@ class MyApp(App):
         global connect
         connect.close()
         print("Successfully closed")
-        sys.exit();
+        sys.exit()
         #App.stop()
 
 if __name__ == '__main__':

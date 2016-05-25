@@ -8,7 +8,8 @@ from kivy.clock import Clock
 import datetime
 
 class SolarCarConnector:
-    HOST="192.168.1.3"
+
+    HOST=socket.gethostbyname(socket.gethostname())
     PORT=13000
     message=""
     keepthreading=True
@@ -22,7 +23,7 @@ class SolarCarConnector:
     """
     def __init__(self):
         #global thread
-        print(threading.active_count())
+
         try:
             #create an AF_INET, STREAM socket (TCP)
             self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -51,14 +52,17 @@ class SolarCarConnector:
         do NOT block the main UI with this.
         :return:
         '''
-        self.keepthreading=True
+
+        self.HOST = socket.gethostbyname(socket.gethostname())
+        self.keepthreading = True
+        print 'IP Address: '+str(self.HOST)
         print 'starting serv'
         print 'please run SimData'
         print 'startserv running from graphs.py'
         self.s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         try:
             self.s.bind((self.HOST, self.PORT))
-        except socket.error , msg:
+        except socket.error, msg:
             print 'Bind failed. Error Code : ' + str(msg[0]) + ' Message ' + msg[1]
 
         print 'Socket bind complete'
@@ -67,7 +71,7 @@ class SolarCarConnector:
         print 'Socket now listening'
         conn, addr = self.s.accept()
         print 'Connected with ' + addr[0] + ':' + str(addr[1])
-        self.readstringevent= Clock.schedule_interval(self.updateReadString, 1 / 10.)
+        self.readstringevent = Clock.schedule_interval(self.updateReadString, 1 / 10.)
         self.poll(conn)
 
         pass
@@ -79,13 +83,17 @@ class SolarCarConnector:
         :return:
         '''
         sock.settimeout(self.TIMEOUT)
-
+        if(threading.active_count() > 5):
+            print 'High number of threads found'
+            print 'Number of threads:' + str(threading.active_count())
         while self.keepthreading:
-            sock.sendall("poll")
             try:
+                sock.sendall("poll")
                 self.message=sock.recv(128)
             except socket.timeout:
                 print('Connection timed out. Disconnected')
+                self.message="quit"
+            except socket.error:
                 self.message="quit"
             #print self.message
             if not self.message:
@@ -101,11 +109,12 @@ class SolarCarConnector:
                 self.keepthreading=False
                 print("Stopped")
                 sock.close()
+                Clock.unschedule(self.readstringevent)
                 break
             self.str=self.message.split(';')
             time.sleep(self.SAMPLESPEED_S)
 
-        print("unscheduled")
+        #print("unscheduled")
         pass
 
     def updateReadString(self, *args):
@@ -127,7 +136,7 @@ class SolarCarConnector:
                 int(val[1])
                 return True
             except ValueError:
-                print('Invalid value')
+                #print('Invalid value')
                 return False
         else:
             print('Invalid key:')
