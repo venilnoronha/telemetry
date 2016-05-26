@@ -8,6 +8,7 @@ class SimResultScreen(BoxLayout):
     def __init__(self, parentapp, simobj):
         super (SimResultScreen, self).__init__(orientation='vertical')
         self.parentapp = parentapp
+        self.simobj = simobj
         graphmodule = self.getGraphModule(simobj)
         self.add_widget(graphmodule)
 
@@ -31,7 +32,9 @@ class SimResultScreen(BoxLayout):
         return g
 
     def dumpcallback(self, instance):
-        util.datadump.dumpdata(None)
+        data = self.simobj.carmodel.respool.getCSVData()
+
+        util.datadump.dumpdata(data)
 
 
 class SimUnitPlot(Graph):
