@@ -29,6 +29,7 @@ def saveDataDialogBox(msg):
     popup.mainloop()
 
 class SolarCarConnector:
+
     HOST=socket.gethostbyname(socket.gethostname())
     PORT=13000
     message=""

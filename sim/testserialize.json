@@ -1,9 +1,36 @@
 {
+    "itinerary":[
+        [
+            "7h0m",
+            "charging"
+        ],
+        [
+            "9h0m",
+            "driving"
+        ],
+        [
+            "12h0m",
+            "charging"
+        ],
+        [
+            "13h0m",
+            "driving"
+        ],
+        [
+            "17h0m",
+            "charging"
+        ],
+        [
+            "19h0m",
+            "inactive"
+        ]
+    ],
     "list":[
         1,
         3,
         3,
         7
     ],
+    "targetvelocity":24.0,
     "teststr":"helloworld"
 }

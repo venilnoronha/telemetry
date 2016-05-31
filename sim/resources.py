@@ -1,10 +1,12 @@
 __author__ = 'paul'
+import util.datadump
 
 class CarResource:
-    def __init__(self,unit='N/A',initvalue=0):
+    def __init__(self,name,unit='N/A',initvalue=0):
+        self.name = name
         self.unit = unit
         self.value = initvalue
-        self.hist = [(0,0)]
+        self.hist = []
         return
     def recordHist(self, elapsedtime):
         '''
@@ -12,6 +14,17 @@ class CarResource:
         '''
         self.hist.append((elapsedtime,self.value))
         return
+
+    def getHist(self, granularity):
+        '''
+        returns a history but with values of every timestep*granularity seconds instead of the original
+        this gives you a way to save out data at a higher resolution so you don't take up WAY too much data.
+        '''
+        rv = []
+        for x in range(0,len(self.hist),granularity):
+            rv.append(self.hist[x])
+
+        return rv
 
     def getMinMax(self):
         maxx = 0
@@ -31,15 +44,15 @@ class CarResource:
                 miny = y
         return (minx, maxx, miny, maxy)
 
-class ResourcePool:
+class ResourcePool(util.datadump.DataHolder):
     '''
     defines the entire resource pool for the modeled car during one simulation iteration.
     '''
     def __init__(self):
-        self.batteryChargeAh = CarResource('Ah', 1000000)#according to what i know at least, battery charge is measured in Ampere-hour.
-        self.velocityms = CarResource('m/s', 0)
-        self.solarOutput = CarResource('W(dc)', 0)
-        self.batteryConnection = CarResource('', 0)#some regulations require you to remove your battery at a certain time.
+        self.batteryChargeAh = CarResource('Charge', 'Ah', 1000000)#according to what i know at least, battery charge is measured in Ampere-hour.
+        self.velocityms = CarResource('Velocity', 'm/s', 0)
+        self.solarOutput = CarResource('Solar Output', 'W(dc)', 0)
+        self.batteryConnection = CarResource('Battery Connection','', 0)#some regulations require you to remove your battery at a certain time.
         return
 
     def recordResources(self, elapsedtime):
@@ -50,3 +63,22 @@ class ResourcePool:
         self.velocityms.recordHist(elapsedtime)
         self.solarOutput.recordHist(elapsedtime)
         self.batteryConnection.recordHist(elapsedtime)
+
+    def getCSVData(self):
+        temp = [self.batteryChargeAh,
+                self.velocityms,
+                self.solarOutput,
+                self.batteryConnection]
+        rv = []
+        tempdata = []
+        row = ["Elapsed Time (s)"]
+        for hist in temp:
+            row.append(hist.name + " (" + hist.unit + ")")
+            tempdata.append(hist.getHist(10))
+        rv.append(row)
+        for index in range(0,len(tempdata[0])):
+            row = [tempdata[0][index][0]]
+            for hist in tempdata:
+                row.append(hist[index][1])
+            rv.append(row)
+        return rv;

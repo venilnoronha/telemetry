@@ -2,17 +2,21 @@ __author__ = 'paul'
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from graphlib import Graph, MeshLinePlot
-
+import util.datadump
 
 class SimResultScreen(BoxLayout):
     def __init__(self, parentapp, simobj):
         super (SimResultScreen, self).__init__(orientation='vertical')
         self.parentapp = parentapp
+        self.simobj = simobj
         graphmodule = self.getGraphModule(simobj)
         self.add_widget(graphmodule)
 
         bottombar = BoxLayout(orientation='horizontal',size_hint=(1.0,0.1))
         datadumpbutton = Button(text='Save Result...')
+
+
+        datadumpbutton.bind(on_press=self.dumpcallback)
         seeparameter = Button(text='Edit Strategy...')
         bottombar.add_widget(seeparameter)
         bottombar.add_widget(datadumpbutton)
@@ -27,6 +31,10 @@ class SimResultScreen(BoxLayout):
         gv = SimUnitPlot('velocity', v)
         return g
 
+    def dumpcallback(self, instance):
+        data = self.simobj.carmodel.respool.getCSVData()
+
+        util.datadump.dumpdata(data)
 
 
 class SimUnitPlot(Graph):

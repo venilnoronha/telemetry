@@ -2,6 +2,7 @@ __author__ = 'paul'
 from simodel import SimCarModel, CarBehaviorParserFactory
 import datetime
 import random
+from strategyobject import StrategySerializableObject
 from rules import SimRule
 
 
@@ -20,12 +21,13 @@ class SimulationObject:
     DEBUG = True
 
     def __init__(self, iname, startdatetime):
-        self.variations = SimVariationObject()
+        teststrat = StrategySerializableObject()
+        teststrat.deserializeStrategy('testserialize.json');
         self.iterationName = iname
         self.currentdatetime = startdatetime
         self.startdatetime = startdatetime
         self.carmodel = SimCarModel(startdatetime)
-        self.rules = DailyItinerary(self.variations)
+        self.rules = DailyItinerary(teststrat)
         self.initDebugDefaults()
         return
 
@@ -130,12 +132,28 @@ class DailyItinerary:
     The daily itinerary as well as the rule-modules inside the itinerary (how we choose the speed, what we do at what time, etc)
     is the 'meat' of the strategy, and will be the factors we adjust (either manually or with random variations)
     '''
-    def __init__(self, variedobj):
+    def __init__(self, paramobj):
         #debug list of itinerary reflects the comments above.
-        self.list = variedobj.getVariedItinerary()
+        self.paramobj = paramobj
+        self.list = DailyItinerary.getRulesListFromParameterObject(paramobj)
         self.currentIndex = 0
         return
 
+    @classmethod
+    def getRulesListFromParameterObject(cls, param):
+        list = []
+        print(param)
+        for rule in param.itinerary:
+            hdelim = rule[0].split("h");
+            h = int(hdelim[0])
+            mdelim = hdelim[1].split("m");
+            m = int(mdelim[0])
+            dd = datetime.time(hour=h, minute=m)
+            behavior = rule[1]
+            specifictime = SpecificTimeBehavior(dd,behavior)
+            list.append(SimRule(dd, behavior))
+
+        return list
 
     def updateStateFromRules(self, currentdatetime, deltatime, carmodel):
         '''
@@ -154,7 +172,7 @@ class DailyItinerary:
         if self.currentIndex < len(self.list):
             nextrule = self.list[self.currentIndex]
             if SimRule.shouldRuleHappen(currentdatetime.time(), nextdatetime.time(), nextrule.ruleTime):
-                behavior = CarBehaviorParserFactory.parseCreateCarBehavior(nextrule.statestring)
+                behavior = CarBehaviorParserFactory.parseCreateCarBehavior(nextrule.statestring, self.paramobj)
                 if behavior:
                     carmodel.transitionBehavior(behavior)
 
@@ -175,29 +193,29 @@ class SimVariationObject:
      etc.
     '''
     def __init__(self):
-        self.itinerary = [VariedItineraryItem('charging', 7),
-                             VariedItineraryItem('driving', 9),
-                             VariedItineraryItem('charging', 12),
-                             VariedItineraryItem('driving', 13),
-                             VariedItineraryItem('charging', 17),
-                             VariedItineraryItem('inactive', 19)]
+        self.itinerary = [SpecificTimeBehavior(datetime.time(hour=7),behaviorname='charging'),
+                             SpecificTimeBehavior(datetime.time(hour=9),behaviorname='driving'),
+                             SpecificTimeBehavior(datetime.time(hour=12),behaviorname='charging'),
+                             SpecificTimeBehavior(datetime.time(hour=13),behaviorname='driving'),
+                             SpecificTimeBehavior(datetime.time(hour=17),behaviorname='charging'),
+                             SpecificTimeBehavior(datetime.time(hour=19),behaviorname='inactive')]
 
         return
 
     def getVariedItinerary(self):
         rv = []
         for item in self.itinerary:
-            hr = item.seedtime
-            hr += random.uniform(-item.variation, item.variation)
-            ihour = int(hr)
-            min = hr-ihour
-            min *= 60
-            min = int(min)
-            rv.append(SimRule(datetime.time(hour=ihour, minute=min), item.behaviorname))
+            rv.append(SimRule(item.getTime(), item.behaviorname))
         return rv
+class TimeBehavior:
+    def __init__(self, behaviorname='inactive'):
+        self.behaviorname = behaviorname
 
-class VariedItineraryItem:
-    def __init__(self, behaviorname, seedtime, variation=1.0):
+    def getTime(self):
+        return datetime.time(hour=0,minute=0)
+
+class VariedItineraryItem(TimeBehavior):
+    def __init__(self, seedtime, variation=1.0, behaviorname='inactive'):
         '''
 
         :param behaviorname: serialized string for the behavior. for example, 'driving' for the Driving Car Behavior.
@@ -205,9 +223,26 @@ class VariedItineraryItem:
         :param variation: the variation on either side of the specified seed. in hours.
         :return:
         '''
-        self.behaviorname = behaviorname
+        TimeBehavior.__init__(self,behaviorname=behaviorname)
         self.seedtime = seedtime
         self.variation = variation
 
         return
 
+    def getTime(self):
+        hr = self.seedtime
+        hr += random.uniform(-self.variation, self.variation)
+        ihour = int(hr)
+        min = hr-ihour
+        min *= 60
+        min = int(min)
+        ttt = datetime.time(hour=ihour, minute=min)
+        return ttt
+
+class SpecificTimeBehavior(TimeBehavior):
+    def __init__(self, time=datetime.time(), behaviorname='inactive'):
+        TimeBehavior.__init__(self, behaviorname=behaviorname)
+        self.time = time
+
+    def getTime(self):
+        return self.time
