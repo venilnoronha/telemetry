@@ -16,9 +16,9 @@ class MyApp(App):
     isConnected=False
     connect=object
     def build(self):
-        global connect
+        #global connect
         mainview = BoxLayout(orientation='horizontal')
-
+        #btn1 = Label(text='Hello', size_hint=(.7, 1))
         quickviewpanel = Quickview()
         graphviewpanel = GraphView()
 
@@ -27,13 +27,12 @@ class MyApp(App):
 
 
         #i'm commenting these out for now.
-        connect= SolarCarConnector()
+        self.connect= SolarCarConnector()
 
         return mainview
 
     def on_stop(self):
-        global connect
-        connect.close()
+        self.connect.close()
         print("Successfully closed")
         sys.exit()
         #App.stop()

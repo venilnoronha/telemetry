@@ -93,7 +93,7 @@ class SingleUnitPlot(Graph):
         self.xlabel = 'Time'
         self.ylabel = datamodel.unittype
         self.unittype=datamodel.unittype
-        self.datas = []
+        self.dataModels = []
         self.plotdata = []
         self.addModel(datamodel,color)
         return
@@ -118,10 +118,10 @@ class SingleUnitPlot(Graph):
         return unittype == self.unittype
 
     def checkModelAlreadyViewing(self, datamodel):
-        return datamodel in self.datas #not sure if this will check pointer or values...hopefully pointers.
+        return datamodel in self.dataModels
 
     def addModel(self, datamodel, color_):
-        self.datas.append(datamodel)
+        self.dataModels.append(datamodel)
         tempplotdata = self.getPlotDataForModel(datamodel)
         self.plotdata.append(tempplotdata)
         plot = MeshLinePlot(color= color_)
@@ -130,7 +130,7 @@ class SingleUnitPlot(Graph):
         return
 
     def removeModel(self, datamodel):
-        self.datas.remove(datamodel)
+        self.dataModels.remove(datamodel)
         tempplotdata = self.getPlotDataForModel(datamodel)
         self.plotdata.remove(tempplotdata)
         self.remove_plot()
@@ -140,9 +140,9 @@ class SingleUnitPlot(Graph):
 
     def updatePlots(self,*args):
         counter=0
-        for i in range(0,len(self.datas)):
-            if (self.datas[i].getIsSelected()):
-                updateddata = self.getPlotDataForModel(self.datas[i])
+        for i in range(0,len(self.dataModels)):
+            if (self.dataModels[i].getIsSelected()):
+                updateddata = self.getPlotDataForModel(self.dataModels[i])
                 self.plots[i].points = updateddata
                 counter+=1
             else:
