@@ -15,7 +15,6 @@ class datadump:
 
     def appendValue(self,name, value):
         if(self.data.has_key(name)):
-            print 'appended value to datadump'
             self.data[name].append(value)
 
         else:

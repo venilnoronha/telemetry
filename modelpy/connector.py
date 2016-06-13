@@ -11,18 +11,31 @@ from Tkinter import *
 import datetime
 
 def saveDataDialogBox(msg):
-    def setValue(input):
+    def saveValues(input):
         SolarCarConnector.saveData=input
+        SolarCarConnector.saveCSV = csv.get()
+        SolarCarConnector.saveJSON = json.get()
         popup.destroy()
+
     NORM_FONT= ("Verdana", 10)
     popup = tk.Tk()
     popup.wm_title("Save Data")
-    label = Label(popup, text=msg, font=NORM_FONT)
+    h=180
+    w=300
+    popup.geometry('%dx%d+600+250' % (w, h))
+    label = Label(popup, text=msg, font=NORM_FONT, wraplength= 260)
     label.pack(side="top", fill="x", pady=10, padx=20)
+    csv=BooleanVar()
+    checkCSV=Checkbutton(popup,text="Save as .csv file", variable=csv)
+    checkCSV.toggle()
+    checkCSV.pack()
+    json=BooleanVar()
+    checkJSON=Checkbutton(popup,text="Save as .json file", variable=json)
+    checkJSON.pack()
     buttonframe= Frame(popup,width=popup.winfo_reqwidth())
-    B1 = Button(buttonframe, text="Yes", width=10, command = lambda: setValue(True))
+    B1 = Button(buttonframe, text="Okay", width=10, command = lambda: saveValues(True))
     B1.grid(row=0, column=0, pady=20)
-    B2 = Button(buttonframe, text="No", width=10, command = lambda: setValue(False))
+    B2 = Button(buttonframe, text="Cancel", width=10, command = lambda: saveValues(False))
     B2.grid(row=0, column=1, pady=20, sticky=E)
     buttonframe.pack()
 
@@ -44,13 +57,15 @@ class SolarCarConnector:
     starttime=''
     endtime=''
     saveData=False
+    saveCSV=False
+    saveJSON=False
 
     """
     this class handles actually making a connection to the simulation or the actual microprocessor.
     """
     def __init__(self):
         #global thread
-        self.starttime=datetime.datetime.now().strftime('%m_%d(%H.%M)')
+        self.starttime=datetime.datetime.now().strftime('%m_%d_(%H.%M')
         try:
             #create an AF_INET, STREAM socket (TCP)
             self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, socket.IPPROTO_TCP)
@@ -68,13 +83,15 @@ class SolarCarConnector:
         pass
 
     def close(self):
-        saveDataDialogBox("Would you like to save the collected data as a .json and .csv file?")
+        saveDataDialogBox("Would you like to save the collected data as a .json and/or .csv file?")
         if(self.saveData==True):
-            self.endtime=datetime.datetime.now().strftime('%m_%d(%H.%M)')
+            self.endtime=datetime.datetime.now().strftime('%H.%M)')
             fileName1=self.starttime+'-'+self.endtime+'.json'
             fileName2=self.starttime+'-'+self.endtime+'.csv'
-            self.dump.exportJSON(fileName1)
-            self.dump.exportCSV(fileName2)
+            if(self.saveJSON):
+                self.dump.exportJSON(fileName1)
+            if(self.saveCSV):
+                self.dump.exportCSV(fileName2)
         self.keepthreading=False
         self.s.close()
 

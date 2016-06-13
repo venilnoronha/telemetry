@@ -85,8 +85,12 @@ class QuickViewButton(Button):
         else:
             if(zone == HazardZone.SAFE):
                 return clicksafecol
+            elif (zone == HazardZone.WARN1):
+                return clickcautioncol1
             elif (zone == HazardZone.WARN2):
                 return clickcautioncol2
+            elif (zone == HazardZone.WARN3):
+                return clickcautioncol3
             else:
                 return clickdangercol
 
