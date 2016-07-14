@@ -187,5 +187,5 @@ colorlist = {'Cabin Temp': [1, 0, 1, 1], #purple
             'Solar Volt': [0,1,0,1], #green
             'Battery Volt': [1, 0, 0, 1] #red
             #etc
-            };
+            }
 

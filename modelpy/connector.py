@@ -59,6 +59,7 @@ class SolarCarConnector:
     saveData=False
     saveCSV=False
     saveJSON=False
+    connected=False
 
     """
     this class handles actually making a connection to the simulation or the actual microprocessor.
@@ -93,6 +94,7 @@ class SolarCarConnector:
             if(self.saveCSV):
                 self.dump.exportCSV(fileName2)
         self.keepthreading=False
+        self.connected=False
         self.s.close()
 
     def startserv(self):
@@ -102,7 +104,7 @@ class SolarCarConnector:
         do NOT block the main UI with this.
         :return:
         '''
-
+        self.connected=False
         self.HOST = socket.gethostbyname(socket.gethostname())
         self.keepthreading = True
         print 'IP Address: '+str(self.HOST)
@@ -121,6 +123,7 @@ class SolarCarConnector:
         print 'Socket now listening'
         conn, addr = self.s.accept()
         print 'Connected with ' + addr[0] + ':' + str(addr[1])
+        self.connected=True
         self.readstringevent = Clock.schedule_interval(self.parseStringToModel, 1 / 10.)
         self.poll(conn)
 
