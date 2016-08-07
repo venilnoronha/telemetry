@@ -8,8 +8,13 @@ safecol = [0,1,0,1]
 clicksafecol=[0,.7,0,1]
 dangercol = [1,0,0,1]
 clickdangercol=[.7,0,0,1]
-cautioncol = [1,1,0,1]
-clickcautioncol=[.7,.7,0,1]
+
+cautioncol1 = [0.5,1,0,1]
+clickcautioncol1=[.2,.7,0,1]
+cautioncol2 = [1,1,0,1]
+clickcautioncol2=[.7,.7,0,1]
+cautioncol3 = [1,0.5,0,1]
+clickcautioncol3=[.7,.2,0,1]
 
 class QuickViewButton(Button):
 
@@ -69,15 +74,23 @@ class QuickViewButton(Button):
         if(self.datam.getIsSelected()==False):
             if(zone == HazardZone.SAFE):
                 return safecol
-            elif (zone == HazardZone.WARN):
-                return cautioncol
+            elif (zone == HazardZone.WARN1):
+                return cautioncol1
+            elif (zone == HazardZone.WARN2):
+                return cautioncol2
+            elif (zone == HazardZone.WARN3):
+                return cautioncol3
             else:
                 return dangercol
         else:
             if(zone == HazardZone.SAFE):
                 return clicksafecol
-            elif (zone == HazardZone.WARN):
-                return clickcautioncol
+            elif (zone == HazardZone.WARN1):
+                return clickcautioncol1
+            elif (zone == HazardZone.WARN2):
+                return clickcautioncol2
+            elif (zone == HazardZone.WARN3):
+                return clickcautioncol3
             else:
                 return clickdangercol
 

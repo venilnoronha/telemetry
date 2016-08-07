@@ -5,7 +5,41 @@ import threading
 import model
 import time
 from kivy.clock import Clock
+from data.datadump import datadump
+import Tkinter as tk
+from Tkinter import *
 import datetime
+
+def saveDataDialogBox(msg):
+    def saveValues(input):
+        SolarCarConnector.saveData=input
+        SolarCarConnector.saveCSV = csv.get()
+        SolarCarConnector.saveJSON = json.get()
+        popup.destroy()
+
+    NORM_FONT= ("Verdana", 10)
+    popup = tk.Tk()
+    popup.wm_title("Save Data")
+    h=180
+    w=300
+    popup.geometry('%dx%d+600+250' % (w, h))
+    label = Label(popup, text=msg, font=NORM_FONT, wraplength= 260)
+    label.pack(side="top", fill="x", pady=10, padx=20)
+    csv=BooleanVar()
+    checkCSV=Checkbutton(popup,text="Save as .csv file", variable=csv)
+    checkCSV.toggle()
+    checkCSV.pack()
+    json=BooleanVar()
+    checkJSON=Checkbutton(popup,text="Save as .json file", variable=json)
+    checkJSON.pack()
+    buttonframe= Frame(popup,width=popup.winfo_reqwidth())
+    B1 = Button(buttonframe, text="Okay", width=10, command = lambda: saveValues(True))
+    B1.grid(row=0, column=0, pady=20)
+    B2 = Button(buttonframe, text="Cancel", width=10, command = lambda: saveValues(False))
+    B2.grid(row=0, column=1, pady=20, sticky=E)
+    buttonframe.pack()
+
+    popup.mainloop()
 
 class SolarCarConnector:
 
@@ -17,16 +51,25 @@ class SolarCarConnector:
     TIMEOUT=15
     SAMPLESPEED_S=0.02
     str=""
+    dump=datadump()
+    updateCount=0
+    UPDATE_COUNT_MODULUS=20
+    starttime=''
+    endtime=''
+    saveData=False
+    saveCSV=False
+    saveJSON=False
+    connected=False
 
     """
     this class handles actually making a connection to the simulation or the actual microprocessor.
     """
     def __init__(self):
         #global thread
-
+        self.starttime=datetime.datetime.now().strftime('%m_%d_(%H.%M')
         try:
             #create an AF_INET, STREAM socket (TCP)
-            self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, socket.IPPROTO_TCP)
 
         except socket.error, msg:
             print 'Failed to create socket. Error code: ' + str(msg[0]) + ' , Error message : ' + msg[1]
@@ -41,8 +84,17 @@ class SolarCarConnector:
         pass
 
     def close(self):
-
+        saveDataDialogBox("Would you like to save the collected data as a .json and/or .csv file?")
+        if(self.saveData==True):
+            self.endtime=datetime.datetime.now().strftime('%H.%M)')
+            fileName1=self.starttime+'-'+self.endtime+'.json'
+            fileName2=self.starttime+'-'+self.endtime+'.csv'
+            if(self.saveJSON):
+                self.dump.exportJSON(fileName1)
+            if(self.saveCSV):
+                self.dump.exportCSV(fileName2)
         self.keepthreading=False
+        self.connected=False
         self.s.close()
 
     def startserv(self):
@@ -52,7 +104,7 @@ class SolarCarConnector:
         do NOT block the main UI with this.
         :return:
         '''
-
+        self.connected=False
         self.HOST = socket.gethostbyname(socket.gethostname())
         self.keepthreading = True
         print 'IP Address: '+str(self.HOST)
@@ -71,7 +123,8 @@ class SolarCarConnector:
         print 'Socket now listening'
         conn, addr = self.s.accept()
         print 'Connected with ' + addr[0] + ':' + str(addr[1])
-        self.readstringevent = Clock.schedule_interval(self.updateReadString, 1 / 10.)
+        self.connected=True
+        self.readstringevent = Clock.schedule_interval(self.parseStringToModel, 1 / 10.)
         self.poll(conn)
 
         pass
@@ -101,8 +154,8 @@ class SolarCarConnector:
             if (self.message=="quit"):
                 print("Disconnected, restarting server")
                 self.keepthreading=False
-                sock.close()
-                #Clock.unschedule(self.readstringevent)
+                #unschedule this for continuous flat graph even when it isn't connected (will mess up datadump values)
+                Clock.unschedule(self.readstringevent)
                 self.startserv()
                 break
             if(self.message=="stop"):
@@ -117,7 +170,7 @@ class SolarCarConnector:
         #print("unscheduled")
         pass
 
-    def updateReadString(self, *args):
+    def parseStringToModel(self, *args):
         if(len(self.str)!=0):
             if(len(self.str)<=self.NUMGRAPHS):
                 str2=[[0 for x in range(2)] for x in range(len(self.str))]
@@ -147,7 +200,15 @@ class SolarCarConnector:
 
         :return:
         '''
+        self.updateCount+=1
+
         for i in range(0, len(info)):
             if(self.messageIsValid(info[i])):
+                if(self.updateCount==self.UPDATE_COUNT_MODULUS):
+                    self.dump.appendValue(info[i][0],[time.time(),int(info[i][1])])
                 model.datalist[info[i][0]].setCurrentVal(int(info[i][1]))
+
+        if(self.updateCount==self.UPDATE_COUNT_MODULUS):
+            self.updateCount=0
+
         pass

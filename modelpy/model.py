@@ -5,13 +5,24 @@ __author__ = 'paul'
 
 class HazardZone:
     SAFE=0
-    WARN=1
-    DANGER=2
+    WARN1=1
+    WARN2=2
+    WARN3=3
+    DANGER=4
+
+    BOUNDS=[20,40,60,80]
+    BOUNDTYPE=0
+
+
+    DESCENDING=0
+    ASCENDING=1
+    VALLEY=2
+    MOUNTAIN=3
+
     #def __init__(self, safe=[0,20, 30, 40], warn=[20,30, 40, 60],danger=60):
-    def __init__(self, safe=[40], warn=[40, 60],danger=[60]):
-        self.saferange=safe
-        self.warnrange=warn
-        self.dangerrange=danger
+    def __init__(self, warningranges=[20,40,60,80], boundtype=0):
+        self.BOUNDS=warningranges
+        self.BOUNDTYPE=boundtype
 
     def currentRange(self, val):
         '''
@@ -19,53 +30,50 @@ class HazardZone:
         :param val:
         :return:
         '''
-        if self.checkInterval(self.saferange,val, self.SAFE):
-            return self.SAFE
-        elif self.checkInterval(self.warnrange,val, self.WARN):
-            return self.WARN
-        else:
-            return self.DANGER
-
-    def checkInterval(self, intervals, val, zone):
-        '''
-
-        :param intervals:
-        :return:
-        '''
-        is_valid = False
-        if(zone==self.SAFE and len(intervals)==1):
-            if(val<intervals[0]):
-                is_valid=True
-        elif(zone==self.WARN and len(intervals)==2):
-            if(val>=intervals[0] and val<intervals[1]):
-                is_valid=True
-        elif(zone==self.DANGER and len(intervals)==1):
-            if(val>=intervals[0]):
-                is_valid=True
-        else:
-            print 'false'
-            is_valid=False
-        '''
-        i = 0
-        while(i < len(intervals)):
-            minin = min(intervals[i], intervals[i + 1])
-            maxin = max(intervals[i], intervals[i + 1])
-
-            if(val >= minin and val < maxin):
-                is_valid = True
+        if self.BOUNDTYPE==self.ASCENDING:
+            if(val>=self.BOUNDS[3]):
+                return self.SAFE
+            elif(val>=self.BOUNDS[2]):
+                return self.WARN1
+            elif(val>=self.BOUNDS[1]):
+                return self.WARN2
+            elif(val>=self.BOUNDS[0]):
+                return self.WARN3
             else:
-                is_valid = False
-
-            i += 2
-        '''
-        return is_valid
-
-       # minin = min(intervals)
-       # maxin = max(intervals)
-
-
-
-  #      return False
+                return self.DANGER
+        elif self.BOUNDTYPE==self.DESCENDING:
+            if(val>=self.BOUNDS[3]):
+                return self.DANGER
+            elif(val>=self.BOUNDS[2]):
+                return self.WARN3
+            elif(val>=self.BOUNDS[1]):
+                return self.WARN2
+            elif(val>=self.BOUNDS[0]):
+                return self.WARN1
+            else:
+                return self.SAFE
+        elif self.BOUNDTYPE==self.MOUNTAIN:
+            if(val>=self.BOUNDS[3]):
+                return self.DANGER
+            elif(val>=self.BOUNDS[2]):
+                return self.WARN2
+            elif(val>=self.BOUNDS[1]):
+                return self.SAFE
+            elif(val>=self.BOUNDS[0]):
+                return self.WARN2
+            else:
+                return self.DANGER
+        elif self.BOUNDTYPE==self.VALLEY:
+            if(val>=self.BOUNDS[3]):
+                return self.SAFE
+            elif(val>=self.BOUNDS[2]):
+                return self.WARN2
+            elif(val>=self.BOUNDS[1]):
+                return self.DANGER
+            elif(val>=self.BOUNDS[0]):
+                return self.WARN2
+            else:
+                return self.SAFE
 
 
 from collections import deque
@@ -76,14 +84,14 @@ class SuperDataModel:
     base class for all the data that we'll be displaying.
     """
     histsize = 100
-    def __init__(self, name):
+    def __init__(self, name, hazardzone=[20,40,60,80], hazardtype=0):
         self.name = name
         self.unit = ''
         self.unittype=''
         self.val = 20
         self.hist = deque(maxlen=self.histsize)
         self.filldequezero()
-        self.hazardranges = HazardZone()
+        self.hazardranges = HazardZone(hazardzone,hazardtype)
         self.histtimescale = 1.
         self.isselected=False
 
@@ -103,10 +111,10 @@ class SuperDataModel:
         return self.unit
 
     def getHistory(self):
-        return self.hist;
+        return self.hist
 
     def getHazardRanges(self):
-        return self.hazardranges;
+        return self.hazardranges
 
     def getQuickText(self):
         return str(self.val) + ' ' + str(self.unit)
@@ -127,32 +135,32 @@ class TemperatureModel(SuperDataModel):
     """
     temperature readings
     """
-    def __init__(self, name):
-        SuperDataModel.__init__(self,name)
+    def __init__(self, name,hazardzone,hazardtype):
+        SuperDataModel.__init__(self,name,hazardzone=[20,40,60,80],hazardtype=0)
         #lol unicode is hard in python...
         self.unit = u"\u00B0C".encode('utf-8')
         self.unittype="Temperature"
         return
 
 class VoltageModel(SuperDataModel):
-    def __init__(self, name):
-        SuperDataModel.__init__(self,name)
+    def __init__(self, name,hazardzone=[20,40,60,80],hazardtype=0):
+        SuperDataModel.__init__(self,name,hazardzone,hazardtype)
         #lol unicode is hard in python...
         self.unit = "V".encode('utf-8')
         self.unittype="Voltage"
         return
 
 class AmpModel(SuperDataModel):
-    def __init__(self, name):
-        SuperDataModel.__init__(self,name)
+    def __init__(self, name,hazardzone=[20,40,60,80],hazardtype=0):
+        SuperDataModel.__init__(self,name,hazardzone,hazardtype)
         #lol unicode is hard in python...
         self.unit = "A".encode('utf-8')
         self.unittype="Current"
         return
 
 class RpmModel(SuperDataModel):
-    def __init__(self, name):
-        SuperDataModel.__init__(self,name)
+    def __init__(self, name,hazardzone=[20,40,60,80],hazardtype=0):
+        SuperDataModel.__init__(self,name,hazardzone,hazardtype)
         #lol unicode is hard in python...
         self.unit = "rpm".encode('utf-8')
         self.unittype="RMP"
@@ -163,14 +171,14 @@ class RpmModel(SuperDataModel):
 """
 
 # this is a static variable. if you wanted a object specific variable, you declare it in init
-datalist = {'cabintemp': TemperatureModel('Cabin Temp'),
-            'motortemp': TemperatureModel('Motor Temp'),
-            'batterytemp': TemperatureModel('Battery Temp'),
-            'motorrpm': RpmModel('Motor RPM'),
-            'solarvolt': VoltageModel('Solar Volt'),
-            'batvolt': VoltageModel('Battery Volt')
+datalist = {'cabintemp': TemperatureModel('Cabin Temp',[20,40,60,80],HazardZone.MOUNTAIN),
+            'motortemp': TemperatureModel('Motor Temp',[20,40,60,80],HazardZone.DESCENDING),
+            'batterytemp': TemperatureModel('Battery Temp',[20,40,60,80],HazardZone.DESCENDING),
+            'motorrpm': RpmModel('Motor RPM',[20,40,60,80],HazardZone.DESCENDING),
+            'solarvolt': VoltageModel('Solar Volt',[20,40,60,80],HazardZone.ASCENDING),
+            'batvolt': VoltageModel('Battery Volt',[20,40,60,80],HazardZone.ASCENDING)
             #etc
-            };
+            }
 
 colorlist = {'Cabin Temp': [1, 0, 1, 1], #purple
             'Motor Temp': [0,0,1,1], #blue
@@ -179,5 +187,5 @@ colorlist = {'Cabin Temp': [1, 0, 1, 1], #purple
             'Solar Volt': [0,1,0,1], #green
             'Battery Volt': [1, 0, 0, 1] #red
             #etc
-            };
+            }
 
