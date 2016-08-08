@@ -14,7 +14,8 @@ class SimMainScreen(BoxLayout):
         super (SimMainScreen, self).__init__(orientation='vertical')
         self.parentapp = parentapp
 
-        welcometext = Label(text='Welcome to SC/SC Simluation')
+        welcometext = Label(text='Solar Car Strategy Simluation',size_hint=(None, .2),color=(1,0,0))
+        welcometext.bcolor=(0,1,1)
         self.add_widget(welcometext)
 
         choices = self.buildChoices()
@@ -26,22 +27,37 @@ class SimMainScreen(BoxLayout):
         choices.padding=50
         choices.spacing=20
 
-        loadbutton = Button(text='Load a Strategy...')
-        loadbutton.bind(on_press=self.loadbuttoncallback)
-        choices.add_widget(loadbutton)
-
-        newbutton = Button(text='Create a New Strategy')
-        newbutton.bind(on_press=self.newbuttoncallback)
-        choices.add_widget(newbutton)
-
-        startbutton = Button(text='DEBUG: Run It!', font_size=14)
-        startbutton.bind(on_press=self.startbuttoncallback)
-        choices.add_widget(startbutton)
-
+        simmenu = self.buildSimuMenu()
+        choices.add_widget(simmenu)
 
         resultbutton = Button(text='Load a Saved Result...', font_size=14)
         resultbutton.bind(on_press=self.resultbuttoncallback)
         choices.add_widget(resultbutton)
+        return choices
+
+    def buildSimuMenu(self):
+        choices = BoxLayout(orientation='vertical')
+        choices.padding=50
+        choices.spacing=20
+
+        title = Label(text='Simulation:')
+        choices.add_widget(title)
+
+        strategysection = BoxLayout(orientation='horizontal')
+
+        selectedlabel = Label(text='Selected Strategy:')
+        strategysection.add_widget(selectedlabel)
+
+        loadbutton = Button(text='Edit...')
+        loadbutton.bind(on_press=self.loadbuttoncallback)
+        strategysection.add_widget(loadbutton)
+
+        choices.add_widget(strategysection)
+
+        startbutton = Button(text='Run Simulation with Strategy')
+        startbutton.bind(on_press=self.startbuttoncallback)
+        choices.add_widget(startbutton)
+
         return choices
 
     def resultbuttoncallback(self, instance):
