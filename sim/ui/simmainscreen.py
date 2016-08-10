@@ -14,12 +14,13 @@ class SimMainScreen(BoxLayout):
         super (SimMainScreen, self).__init__(orientation='vertical')
         self.parentapp = parentapp
 
-        welcometext = Label(text='Solar Car Strategy Simluation',size_hint=(None, .2),color=(1,0,0))
-        welcometext.bcolor=(0,1,1)
+        welcometext = Label(text='Solar Car Strategy Simluation',size_hint=(1, .3),font_size=70)
+
         self.add_widget(welcometext)
 
         choices = self.buildChoices()
         self.add_widget(choices)
+
         pass
 
     def buildChoices(self):
@@ -30,17 +31,33 @@ class SimMainScreen(BoxLayout):
         simmenu = self.buildSimuMenu()
         choices.add_widget(simmenu)
 
-        resultbutton = Button(text='Load a Saved Result...', font_size=14)
+        anamenu = self.buildAnaMenu()
+        choices.add_widget(anamenu)
+
+        return choices
+
+    def buildAnaMenu(self):
+        choices = BoxLayout(orientation='vertical')
+        title = Label(text='Analysis', font_size=50, halign='left',valign='top')
+        title.bind(size=title.setter('text_size'))
+        choices.add_widget(title)
+
+        strategysection = BoxLayout(orientation='horizontal')
+        resultbutton = Button(text='Load a Saved Result')
         resultbutton.bind(on_press=self.resultbuttoncallback)
-        choices.add_widget(resultbutton)
+        strategysection.add_widget(resultbutton)
+
+        choices.add_widget(strategysection)
+
+
+
         return choices
 
     def buildSimuMenu(self):
         choices = BoxLayout(orientation='vertical')
-        choices.padding=50
-        choices.spacing=20
 
-        title = Label(text='Simulation:')
+        title = Label(text='Simulation',font_size=50, halign='left',valign='top')
+        title.bind(size=title.setter('text_size'))
         choices.add_widget(title)
 
         strategysection = BoxLayout(orientation='horizontal')
