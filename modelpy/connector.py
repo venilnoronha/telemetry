@@ -10,6 +10,30 @@ import Tkinter as tk
 from Tkinter import *
 import datetime
 
+def selectIPAddress():
+    def saveValue(self):
+        SolarCarConnector.HOST=ipOptions.get()
+        popup.destroy()
+    ipaddresses= [ip for ip in socket.gethostbyname_ex(socket.gethostname())][2]
+    NORM_FONT= ("Verdana", 10)
+    popup = tk.Tk()
+    popup.wm_title("Select IPHost Address")
+    h=180
+    w=300
+    popup.geometry('%dx%d+600+250' % (w, h))
+    label = Label(popup, text="Please select the IP address to host from", font=NORM_FONT, wraplength= 260)
+    label.pack(side="top", fill="x", pady=10, padx=20)
+    ipOptions = StringVar(popup)
+    ipOptions.set(ipaddresses[0])
+    dropdown = apply(OptionMenu, (popup, ipOptions) + tuple(ipaddresses))
+    dropdown.pack()
+    buttonframe= Frame(popup,width=popup.winfo_reqwidth())
+    B1 = Button(buttonframe, text="Okay", width=10, command = lambda: saveValue(popup))
+    B1.grid(row=0, column=0, pady=20)
+    buttonframe.pack()
+
+    popup.mainloop()
+
 def saveDataDialogBox(msg):
     def saveValues(input):
         SolarCarConnector.saveData=input
@@ -43,7 +67,6 @@ def saveDataDialogBox(msg):
 
 class SolarCarConnector:
 
-    HOST=socket.gethostbyname(socket.gethostname())
     PORT=13000
     message=""
     keepthreading=True
@@ -64,8 +87,9 @@ class SolarCarConnector:
     """
     this class handles actually making a connection to the simulation or the actual microprocessor.
     """
-    def __init__(self):
+    def __init__(self, ipaddr='192.168.1.110'):
         #global thread
+        selectIPAddress()
         self.starttime=datetime.datetime.now().strftime('%m_%d_(%H.%M')
         try:
             #create an AF_INET, STREAM socket (TCP)
@@ -105,7 +129,6 @@ class SolarCarConnector:
         :return:
         '''
         self.connected=False
-        self.HOST = socket.gethostbyname(socket.gethostname())
         self.keepthreading = True
         print 'IP Address: '+str(self.HOST)
         print 'starting serv'
