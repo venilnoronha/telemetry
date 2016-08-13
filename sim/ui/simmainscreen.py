@@ -14,11 +14,13 @@ class SimMainScreen(BoxLayout):
         super (SimMainScreen, self).__init__(orientation='vertical')
         self.parentapp = parentapp
 
-        welcometext = Label(text='Welcome to SC/SC Simluation')
+        welcometext = Label(text='Solar Car Strategy Simluation',size_hint=(1, .3),font_size=70)
+
         self.add_widget(welcometext)
 
         choices = self.buildChoices()
         self.add_widget(choices)
+
         pass
 
     def buildChoices(self):
@@ -26,22 +28,53 @@ class SimMainScreen(BoxLayout):
         choices.padding=50
         choices.spacing=20
 
-        loadbutton = Button(text='Load a Strategy...')
+        simmenu = self.buildSimuMenu()
+        choices.add_widget(simmenu)
+
+        anamenu = self.buildAnaMenu()
+        choices.add_widget(anamenu)
+
+        return choices
+
+    def buildAnaMenu(self):
+        choices = BoxLayout(orientation='vertical')
+        title = Label(text='Analysis', font_size=50, halign='left',valign='top')
+        title.bind(size=title.setter('text_size'))
+        choices.add_widget(title)
+
+        strategysection = BoxLayout(orientation='horizontal')
+        resultbutton = Button(text='Load a Saved Result')
+        resultbutton.bind(on_press=self.resultbuttoncallback)
+        strategysection.add_widget(resultbutton)
+
+        choices.add_widget(strategysection)
+
+
+
+        return choices
+
+    def buildSimuMenu(self):
+        choices = BoxLayout(orientation='vertical')
+
+        title = Label(text='Simulation',font_size=50, halign='left',valign='top')
+        title.bind(size=title.setter('text_size'))
+        choices.add_widget(title)
+
+        strategysection = BoxLayout(orientation='horizontal')
+
+        selectedlabel = Label(text='Selected Strategy:')
+        strategysection.add_widget(selectedlabel)
+
+        loadbutton = Button(text='Edit...')
         loadbutton.bind(on_press=self.loadbuttoncallback)
-        choices.add_widget(loadbutton)
+        strategysection.add_widget(loadbutton)
 
-        newbutton = Button(text='Create a New Strategy')
-        newbutton.bind(on_press=self.newbuttoncallback)
-        choices.add_widget(newbutton)
+        choices.add_widget(strategysection)
 
-        startbutton = Button(text='DEBUG: Run It!', font_size=14)
+        startbutton = Button(text='Run Simulation with Strategy')
         startbutton.bind(on_press=self.startbuttoncallback)
         choices.add_widget(startbutton)
 
-
-        resultbutton = Button(text='Load a Saved Result...', font_size=14)
-        resultbutton.bind(on_press=self.resultbuttoncallback)
-        choices.add_widget(resultbutton)
         return choices
 
     def resultbuttoncallback(self, instance):
