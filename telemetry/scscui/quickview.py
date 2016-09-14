@@ -2,9 +2,12 @@
 __author__ = 'paul'
 
 from kivy.uix.gridlayout import GridLayout
-from scscui.custombuttons import QuickViewButton
-from modelpy import model
 from kivy.clock import Clock
+
+from telemetry.scscui.custombuttons import QuickViewButton
+from telemetry.modelpy import model
+
+
 class Quickview(GridLayout):
     """
     defines the class that will give a quick overview of data on the left side of the window.

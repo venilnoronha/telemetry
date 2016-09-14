@@ -9,9 +9,9 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
 from kivy.uix.image import Image
 from kivy.clock import Clock
-from scscui.quickview import Quickview
-from scscui.graphs import GraphView
-from modelpy.connector import SolarCarConnector
+from telemetry.scscui.quickview import Quickview
+from telemetry.scscui.graphs import GraphView
+from telemetry.modelpy.connector import SolarCarConnector
 import sys
 
 """
@@ -49,6 +49,7 @@ class MyApp(App):
         mainview.add_widget(quickviewpanel)
        # mainview.add_widget(graphviewpanel)
         '''****************************************************************************************************'''
+
         tp=TabbedPanel()
         tp.do_default_tab=False
 
@@ -81,14 +82,16 @@ class MyApp(App):
         tp.add_widget(th2)
 
         mainview.add_widget(tp)
+
         '''****************************************************************************************************'''
 
-        self.connecticon=Image(source="img/disconnected.png",size_hint=(.05, .04),pos_hint={'x':.94, 'y':.94})
+        self.connecticon=Image(source="../img/disconnected.png",size_hint=(.05, .04),pos_hint={'x':.94, 'y':.94})
 
         self.masterlayout.add_widget(mainview)
         self.masterlayout.add_widget(self.connecticon)
         self.connector= SolarCarConnector()
         self.updateEvent=Clock.schedule_interval(self.update, 1/5)
+
         return self.masterlayout
 
     def on_stop(self):

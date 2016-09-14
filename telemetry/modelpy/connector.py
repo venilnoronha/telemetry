@@ -1,14 +1,16 @@
 __author__ = 'paul'
 import socket   #for sockets
-import sys  #for exit
 import threading
-import model
 import time
-from kivy.clock import Clock
-from data.datadump import datadump
 import Tkinter as tk
 from Tkinter import *
 import datetime
+
+from kivy.clock import Clock
+
+from telemetry.modelpy import model
+from data.datadump import datadump
+
 
 def selectIPAddress():
     def saveValue(self):
@@ -89,12 +91,12 @@ class SolarCarConnector:
     """
     def __init__(self, ipaddr='192.168.1.110'):
         #global thread
-        selectIPAddress()
+        #selectIPAddress()
         self.starttime=datetime.datetime.now().strftime('%m_%d_(%H.%M')
+
         try:
             #create an AF_INET, STREAM socket (TCP)
             self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, socket.IPPROTO_TCP)
-
         except socket.error, msg:
             print 'Failed to create socket. Error code: ' + str(msg[0]) + ' , Error message : ' + msg[1]
             sys.exit()
@@ -108,7 +110,7 @@ class SolarCarConnector:
         pass
 
     def close(self):
-        saveDataDialogBox("Would you like to save the collected data as a .json and/or .csv file?")
+        #saveDataDialogBox("Would you like to save the collected data as a .json and/or .csv file?")
         if(self.saveData==True):
             self.endtime=datetime.datetime.now().strftime('%H.%M)')
             fileName1=self.starttime+'-'+self.endtime+'.json'

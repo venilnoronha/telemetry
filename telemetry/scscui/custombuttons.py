@@ -1,7 +1,9 @@
 __author__ = 'paul'
 from kivy.uix.button import Button
-from modelpy.model import *
+
+from telemetry.modelpy.model import *
 from modelpy import colorlist
+
 
 #static vars for colors
 safecol = [0,1,0,1]
