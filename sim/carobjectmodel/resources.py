@@ -1,5 +1,5 @@
 __author__ = 'paul'
-import util.datadump
+import files.datadump
 
 class CarResource:
     def __init__(self,name,unit='N/A',initvalue=0):
@@ -44,7 +44,7 @@ class CarResource:
                 miny = y
         return (minx, maxx, miny, maxy)
 
-class ResourcePool(util.datadump.DataHolder):
+class ResourcePool(files.datadump.DataHolder):
     '''
     defines the entire resource pool for the modeled car during one simulation iteration.
     '''

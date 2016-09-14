@@ -1,6 +1,9 @@
 __author__ = 'YutongGu'
 import json
-
+'''
+This data dumper was created by yutong for telemetry, while there's another one for simulation...
+we should work to put it all in a single spot.
+'''
 class datadump:
     data={'cabintemp':[],
     'motortemp':[],

@@ -1,13 +1,15 @@
 __author__ = 'paul'
-from kivy.uix.boxlayout import BoxLayout
 import datetime
-from sim.simobj import SimulationObject
+
+from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
+
+from sim.simulation.simobj import SimulationObject
 from simparameditor import ParamLoadDialog
-from sim.strategyloadingediting import StrategyOpener
-from sim.strategyobject import StrategySerializableObject
+from sim.stratparam.strategyobject import StrategySerializableObject
+
 
 class SimMainScreen(BoxLayout):
     def __init__(self, parentapp):

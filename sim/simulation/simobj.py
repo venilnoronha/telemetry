@@ -1,9 +1,10 @@
 __author__ = 'paul'
-from simodel import SimCarModel, CarBehaviorParserFactory
 import datetime
 import random
-from strategyobject import StrategySerializableObject
-from rules import SimRule
+
+from sim.carobjectmodel.simodel import SimCarModel, CarBehaviorParserFactory
+from sim.stratparam.strategyobject import StrategySerializableObject
+from sim.stratparam.rules import SimRule
 
 
 class SimulationObject:

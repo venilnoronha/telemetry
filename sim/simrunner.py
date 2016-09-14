@@ -4,7 +4,7 @@ kivy.require('1.0.6')
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 
-from simobj import SimulationObject
+from simulation.simobj import SimulationObject
 from ui.simparameditor import SimParamEditor
 from ui.simmainscreen import SimMainScreen
 from ui.simresultscreen import SimResultScreen

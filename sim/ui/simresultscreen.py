@@ -2,7 +2,7 @@ __author__ = 'paul'
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from graphlib import Graph, MeshLinePlot
-import util.datadump
+import files.datadump
 
 class SimResultScreen(BoxLayout):
     def __init__(self, parentapp, simobj):
@@ -34,7 +34,7 @@ class SimResultScreen(BoxLayout):
     def dumpcallback(self, instance):
         data = self.simobj.carmodel.respool.getCSVData()
 
-        util.datadump.dumpdata(data)
+        files.datadump.dumpdata(data)
 
 
 class SimUnitPlot(Graph):

@@ -1,6 +1,5 @@
-from modules import *
-from resources import ResourcePool
-import random
+from sim.physics.modules import *
+from sim.carobjectmodel.resources import ResourcePool
 
 __author__ = 'paul'
 

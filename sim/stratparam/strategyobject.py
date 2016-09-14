@@ -21,6 +21,7 @@ class StrategySerializableObject:
         self.targetvelocity = 24.0
         #max battery power 4.5kW
 
+    #TODO serializing *should* be moved to its own module under /files/
     def serializeStrategy(self, filepath):
         with open(filepath, 'w') as fp:
             json.dump(self.__dict__,fp,sort_keys=True,indent=4,separators=(',',':'))

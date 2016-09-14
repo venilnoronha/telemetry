@@ -1,7 +1,9 @@
 __author__ = 'paul'
 
-from simobj import SimulationObject
 import datetime
+
+from sim.simulation.simobj import SimulationObject
+
 
 def runASimIteration():
     racestart = datetime.datetime.today()

@@ -9,7 +9,7 @@ import datetime
 from kivy.clock import Clock
 
 from telemetry.modelpy import model
-from data.datadump import datadump
+from files.telemetrydatadump import datadump
 
 
 def selectIPAddress():
@@ -106,7 +106,7 @@ class SolarCarConnector:
             thread.daemon=True
             thread.start()
         except:
-            print 'fucked up'
+            print 'messed up'
         pass
 
     def close(self):
