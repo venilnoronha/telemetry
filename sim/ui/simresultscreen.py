@@ -32,8 +32,7 @@ class SimResultScreen(BoxLayout):
         return g
 
     def dumpcallback(self, instance):
-        data = self.simobj.carmodel.respool.getCSVData()
-
+        data = files.datadump.getCSVData(self.simobj.carmodel.respool)
         files.datadump.dumpdata(data)
 
 

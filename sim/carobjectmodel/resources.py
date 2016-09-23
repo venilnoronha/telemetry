@@ -44,7 +44,7 @@ class CarResource:
                 miny = y
         return (minx, maxx, miny, maxy)
 
-class ResourcePool(files.datadump.DataHolder):
+class ResourcePool:
     '''
     defines the entire resource pool for the modeled car during one simulation iteration.
     '''
@@ -64,21 +64,3 @@ class ResourcePool(files.datadump.DataHolder):
         self.solarOutput.recordHist(elapsedtime)
         self.batteryConnection.recordHist(elapsedtime)
 
-    def getCSVData(self):
-        temp = [self.batteryChargeAh,
-                self.velocityms,
-                self.solarOutput,
-                self.batteryConnection]
-        rv = []
-        tempdata = []
-        row = ["Elapsed Time (s)"]
-        for hist in temp:
-            row.append(hist.name + " (" + hist.unit + ")")
-            tempdata.append(hist.getHist(10))
-        rv.append(row)
-        for index in range(0,len(tempdata[0])):
-            row = [tempdata[0][index][0]]
-            for hist in tempdata:
-                row.append(hist[index][1])
-            rv.append(row)
-        return rv;

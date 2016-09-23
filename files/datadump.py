@@ -1,13 +1,6 @@
 __author__ = 'paul'
 import csv
 
-class DataHolder:
-    def getCSVData(self):
-        '''
-        to be implemented by children the history holder of both sim and telemetry)
-        :return: None when not implemented. Expected: list of 'history', which are pairs of time and datavalue.
-        '''
-        return None
 
 def dumpdata(csvdata):
 
@@ -20,3 +13,21 @@ def dumpdata(csvdata):
         for row in csvdata:
             testwriter.writerow(row)
 
+def getCSVData(resourceholder):
+        temp = [resourceholder.batteryChargeAh,
+                resourceholder.velocityms,
+                resourceholder.solarOutput,
+                resourceholder.batteryConnection]
+        rv = []
+        tempdata = []
+        row = ["Elapsed Time (s)"]
+        for hist in temp:
+            row.append(hist.name + " (" + hist.unit + ")")
+            tempdata.append(hist.getHist(10))
+        rv.append(row)
+        for index in range(0,len(tempdata[0])):
+            row = [tempdata[0][index][0]]
+            for hist in tempdata:
+                row.append(hist[index][1])
+            rv.append(row)
+        return rv;
