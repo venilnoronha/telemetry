@@ -8,7 +8,7 @@ from kivy.uix.popup import Popup
 
 from sim.simulation.simobj import SimulationObject
 from simparameditor import ParamLoadDialog
-from sim.stratparam.strategyobject import StrategySerializableObject
+from files.strategyserializeobject import StrategySerializableObject
 
 
 class SimMainScreen(BoxLayout):

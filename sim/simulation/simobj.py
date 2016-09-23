@@ -3,7 +3,7 @@ import datetime
 import random
 
 from sim.carobjectmodel.simodel import SimCarModel, CarBehaviorParserFactory
-from sim.stratparam.strategyobject import StrategySerializableObject
+from files.strategyserializeobject import StrategySerializableObject
 from sim.stratparam.rules import SimRule
 
 
