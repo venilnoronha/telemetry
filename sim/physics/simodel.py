@@ -14,7 +14,9 @@ class SimCarModel:
     etc.
     relevant resources should also have a history of values per simulation run so that they can be analyzed.
     '''
-    def __init__(self, startedatetime):
+    def __init__(self, startedatetime, stratobj):
+        #I included a stratobj here because the initial values should be included in the strategy object.
+        #This isn't implemented yet tho!
         self.startdatetime = startedatetime
         self.respool = ResourcePool()
         self.batterymodule = BatterySimulationModel()

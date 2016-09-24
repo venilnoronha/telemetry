@@ -25,7 +25,9 @@ class CarResource:
             rv.append(self.hist[x])
 
         return rv
-
+    '''
+    I think this is used to set the range for the graph visualization atm
+    '''
     def getMinMax(self):
         maxx = 0
         minx = 0
