@@ -1,6 +1,6 @@
 __author__ = 'paul'
 
-from sim.physics.simodel import SimCarModel
+from sim.simulation.simodel import SimCarModel
 from files.strategyserializeobject import StrategySerializableObject
 from sim.stratparam.itinereary import *
 

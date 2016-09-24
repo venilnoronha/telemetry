@@ -3,7 +3,7 @@ import datetime
 import random
 
 from sim.stratparam.rules import SimRule
-from sim.physics.simodel import CarBehaviorParserFactory
+from sim.simulation.simodel import CarBehaviorParserFactory
 
 
 class DailyItinerary:
