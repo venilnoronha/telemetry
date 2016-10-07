@@ -22,7 +22,7 @@ class SimulationObject:
 
     def __init__(self, iname, startdatetime):
         self.stratobj = StrategySerializableObject()
-        self.stratobj.deserializeStrategy('testserialize.json');
+        self.stratobj.deserializeStrategy('parameters/strategy.json');
         self.iterationName = iname
         self.currentdatetime = startdatetime
         self.startdatetime = startdatetime
