@@ -3,7 +3,7 @@ __author__ = 'paul'
 from sim.simulation.simodel import SimCarModel
 from files.strategyserializeobject import StrategySerializableObject
 from sim.stratparam.itinereary import *
-
+from raceobj import RaceObject
 
 
 class SimulationObject:
@@ -21,26 +21,19 @@ class SimulationObject:
     DEBUG = True
 
     def __init__(self, iname, startdatetime):
-        self.stratobj = StrategySerializableObject()
-        self.stratobj.deserializeStrategy('parameters/strategy.json');
         self.iterationName = iname
         self.currentdatetime = startdatetime
         self.startdatetime = startdatetime
+        #following are some objects that (should eventually) be loaded from files
+        #these objects provide the varying parameters within our race.
+        self.stratobj = StrategySerializableObject()
+        self.stratobj.deserializeStrategy('parameters/strategy.json');
+        self.raceconditions = RaceObject()
         self.carmodel = SimCarModel(startdatetime, self.stratobj)
-        self.rules = DailyItinerary(self.stratobj)
+        self.itinerary = DailyItinerary(self.stratobj)
+
         self.initRaceConditions(self.stratobj)
         return
-
-    def initRaceConditions(self, strategyobj):
-        '''
-        using the same strategy object for now where the conditions of the race should e housed...
-        but It's possible we'll move it to a separate file later.
-        Currently it's just debug hardcoded values tho.
-        :param strategyobj:
-        :return:
-        '''
-        self.totalRaceMeters = 3000000 #test value of 3000km for now
-        self.timeLimitSeconds = 60*60*24*7 #test value of 7 days for now
 
 
     def startRun(self):
@@ -81,7 +74,7 @@ class SimulationObject:
             print('updating', self.iterationName, ', elapsed time:', self.getElapsedSeconds(), 'seconds')
         '''
         self.carmodel.stepSim(self.currentdatetime, deltatime)
-        self.rules.updateStateFromRules(self.currentdatetime, deltatime, self.carmodel)
+        self.itinerary.updateStateFromRules(self.currentdatetime, deltatime, self.carmodel)
         self.advancecurrentdatetime(deltatime)
         return
 
@@ -100,10 +93,10 @@ class SimulationObject:
         checks if the simulations has either met the success or failure states, and should stop running and return or not.
         :return: the return message
         '''
-        if self.carmodel.distanceTraveled >= self.totalRaceMeters:
+        if self.carmodel.distanceTraveled >= self.raceconditions.racedistkm:
             return SimulationObject.SUCCESS
         if self.carmodel.isOutOfResoures():
             return SimulationObject.OUTOFRESOURCES
-        if self.getElapsedSeconds() > self.timeLimitSeconds:
+        if self.getElapsedSeconds() > self.raceconditions.timeLimitSeconds:
             return SimulationObject.TIMEOUT
         return SimulationObject.RUNNING
