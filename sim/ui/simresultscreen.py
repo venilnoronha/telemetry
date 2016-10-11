@@ -32,6 +32,7 @@ class SimResultScreen(BoxLayout):
         return g
 
     def dumpcallback(self, instance):
+        #should refactor this into simobj.writeoutput or something. UI shouldn't really contain datadumping code, just call into it.
         data = files.datadump.getCSVData(self.simobj.carmodel.respool)
         files.datadump.dumpdata('outputdata/testdump.csv', data)
 
