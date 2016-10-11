@@ -92,7 +92,7 @@ class SimulationObject:
         checks if the simulations has either met the success or failure states, and should stop running and return or not.
         :return: the return message
         '''
-        if self.carmodel.distanceTraveled >= self.raceconditions.racedistkm:
+        if self.carmodel.distanceTraveled >= (self.raceconditions.racedistkm*1000):
             return SimulationObject.SUCCESS
         if self.carmodel.isOutOfResoures():
             return SimulationObject.OUTOFRESOURCES
