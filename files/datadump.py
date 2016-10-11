@@ -2,10 +2,10 @@ __author__ = 'paul'
 import csv
 
 
-def dumpdata(csvdata):
+def dumpdata(filename, csvdata):
 
     print("dumping data...")
-    with open('dumptest.csv', 'wb') as csvfile:
+    with open(filename, 'wb') as csvfile:
         testwriter = csv.writer(csvfile, delimiter=',',
                                 quotechar='|',
                                 quoting=csv.QUOTE_NONE,

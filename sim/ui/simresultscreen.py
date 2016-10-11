@@ -33,7 +33,7 @@ class SimResultScreen(BoxLayout):
 
     def dumpcallback(self, instance):
         data = files.datadump.getCSVData(self.simobj.carmodel.respool)
-        files.datadump.dumpdata(data)
+        files.datadump.dumpdata('outputdata/testdump.csv', data)
 
 
 class SimUnitPlot(Graph):
