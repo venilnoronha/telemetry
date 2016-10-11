@@ -32,7 +32,6 @@ class SimulationObject:
         self.carmodel = SimCarModel(startdatetime, self.stratobj)
         self.itinerary = DailyItinerary(self.stratobj)
 
-        self.initRaceConditions(self.stratobj)
         return
 
 
