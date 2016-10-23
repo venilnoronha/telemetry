@@ -5,26 +5,33 @@ from kivy.clock import Clock
 from graphlib import Graph, MeshLinePlot
 from telemetry.modelpy import datalist
 from telemetry.modelpy import colorlist
+from files.configs import GraphUnitConfig
 
 
 class GraphView(BoxLayout):
-    gobj1=object
+    temperaturePlot=object
     gobj2=object
     gobj3=object
     
     def __init__(self):
         BoxLayout.__init__(self,orientation='vertical')
         #blue
+        self.tempUnitConfig = GraphUnitConfig()
+        self.voltUnitConfig = GraphUnitConfig()
+        self.rpmUnitConfig = GraphUnitConfig()
+        self.tempUnitConfig.deserializeConfig('../config/TemperatureGraphUnit.cfg')
+        self.voltUnitConfig.deserializeConfig('../config/VoltageGraphUnit.cfg')
+        self.rpmUnitConfig.deserializeConfig('../config/RPMGraphUnit.cfg')
 
-        self.gobj1 = SingleUnitPlot(datalist["cabintemp"], colorlist["Cabin Temp"],"Temperature")
+        self.temperaturePlot = SingleUnitPlot(datalist["cabintemp"], colorlist["Cabin Temp"], self.tempUnitConfig)
         #datalist["cabintemp"].setIsSelected(True)
-        self.gobj2 = SingleUnitPlot(datalist["batvolt"], colorlist["Battery Volt"],"Voltage")
-        self.gobj3 = SingleUnitPlot(datalist["motorrpm"], colorlist["Motor RPM"],"RPM")
-        self.gobj1.addModel(datalist["motortemp"], colorlist["Motor Temp"])
-        self.gobj1.addModel(datalist["batterytemp"], colorlist["Battery Temp"])
+        self.gobj2 = SingleUnitPlot(datalist["batvolt"], colorlist["Battery Volt"], self.voltUnitConfig)
+        self.gobj3 = SingleUnitPlot(datalist["motorrpm"], colorlist["Motor RPM"],self.rpmUnitConfig)
+        self.temperaturePlot.addModel(datalist["motortemp"], colorlist["Motor Temp"])
+        self.temperaturePlot.addModel(datalist["batterytemp"], colorlist["Battery Temp"])
         self.gobj2.addModel(datalist["solarvolt"], colorlist["Solar Volt"])
 
-        self.gobj1.startupdating()
+        self.temperaturePlot.startupdating()
         self.gobj2.startupdating()
         self.gobj3.startupdating()
         #gobj2 = SingleUnitPlot(datalist["cabintemp"])
@@ -47,15 +54,15 @@ class GraphView(BoxLayout):
         return
 
     def checkPlots(self, *args):
-        if(self.gobj1.hasPlot()):
-            if(not self.gobj1.getIsPlotted()):
+        if(self.temperaturePlot.hasPlot()):
+            if(not self.temperaturePlot.getIsPlotted()):
                 print('added gobj1')
-                self.add_widget(self.gobj1)
-                self.gobj1.setIsPlotted(True)
+                self.add_widget(self.temperaturePlot)
+                self.temperaturePlot.setIsPlotted(True)
         else:
-            if(self.gobj1.getIsPlotted()):
-                self.remove_widget(self.gobj1)
-                self.gobj1.setIsPlotted(False)
+            if(self.temperaturePlot.getIsPlotted()):
+                self.remove_widget(self.temperaturePlot)
+                self.temperaturePlot.setIsPlotted(False)
 
         if(self.gobj2.hasPlot()):
             if(not self.gobj2.getIsPlotted()):
@@ -81,14 +88,14 @@ class SingleUnitPlot(Graph):
     minwidth = 10#seconds
     numPlots=0
     isPlotted=False
-    def __init__(self, datamodel, color, title):
+    def __init__(self, datamodel, color, unitconfig):
 
         Graph.__init__(self,x_ticks_minor=5,
-        x_ticks_major=25, y_ticks_major=1,
-        y_grid_label=True, x_grid_label=True, padding=5,
-        x_grid=True, y_grid=True, xmin=-100, xmax=0, ymin=0, ymax=100)
+        x_ticks_major=25, y_ticks_minor=unitconfig.grid_ticks_minor, y_ticks_major=unitconfig.grid_ticks_major,
+        y_grid_label=unitconfig.grid_label, x_grid_label=True, padding=5,
+        x_grid=True, y_grid=True, xmin=-50, xmax=50, ymin=unitconfig.startmin, ymax=unitconfig.startmax)
         self.xlabel = 'Time'
-        self.ylabel = datamodel.unittype
+        self.ylabel = unitconfig.unitname
         self.unittype=datamodel.unittype
         self.dataModels = []
         self.plotdata = []
