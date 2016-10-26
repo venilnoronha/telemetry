@@ -12,16 +12,15 @@ class GraphView(BoxLayout):
     temperaturePlot=object
     gobj2=object
     gobj3=object
-    
     def __init__(self):
         BoxLayout.__init__(self,orientation='vertical')
         #blue
         self.tempUnitConfig = GraphUnitConfig()
         self.voltUnitConfig = GraphUnitConfig()
         self.rpmUnitConfig = GraphUnitConfig()
-        self.tempUnitConfig.deserializeConfig('../config/TemperatureGraphUnit.cfg')
-        self.voltUnitConfig.deserializeConfig('../config/VoltageGraphUnit.cfg')
-        self.rpmUnitConfig.deserializeConfig('../config/RPMGraphUnit.cfg')
+        self.tempUnitConfig.deserializeConfig('config/TemperatureGraphUnit.cfg')
+        self.voltUnitConfig.deserializeConfig('config/VoltageGraphUnit.cfg')
+        self.rpmUnitConfig.deserializeConfig('config/RPMGraphUnit.cfg')
 
         self.temperaturePlot = SingleUnitPlot(datalist["cabintemp"], colorlist["Cabin Temp"], self.tempUnitConfig)
         #datalist["cabintemp"].setIsSelected(True)

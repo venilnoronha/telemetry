@@ -1,5 +1,6 @@
 __author__ = 'paul'
-import socket   #for sockets
+from socket import *
+import socket
 import threading
 import time
 import Tkinter as tk
@@ -85,15 +86,16 @@ class SolarCarConnector:
     saveCSV=False
     saveJSON=False
     connected=False
+    HOST=""
 
     """
     this class handles actually making a connection to the simulation or the actual microprocessor.
     """
     def __init__(self, ipaddr='192.168.1.110'):
         #global thread
-        #selectIPAddress()
+        #selectIPAddress() 
+        self.HOST=socket.gethostbyname(socket.gethostname())
         self.starttime=datetime.datetime.now().strftime('%m_%d_(%H.%M')
-
         try:
             #create an AF_INET, STREAM socket (TCP)
             self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, socket.IPPROTO_TCP)
@@ -143,16 +145,34 @@ class SolarCarConnector:
             print 'Bind failed. Error Code : ' + str(msg[0]) + ' Message ' + msg[1]
 
         print 'Socket bind complete'
-
+        try:
+            thread = threading.Thread(target=self.broadcastIP, args=())
+            thread.daemon=True
+            thread.start()
+        except:
+            print 'Cannot broadcast'
+        pass
         self.s.listen(1)
         print 'Socket now listening'
         conn, addr = self.s.accept()
         print 'Connected with ' + addr[0] + ':' + str(addr[1])
         self.connected=True
-        self.readstringevent = Clock.schedule_interval(self.parseStringToModel, 1 / 10.)
+        self.readstringevent = Clock.schedule_interval(self.parseStringToModel, 1 / 10)
         self.poll(conn)
 
         pass
+
+    def broadcastIP(self, *args):
+
+        b = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        b.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+        b.bind(('', 9999))
+        print "Waiting to receive broadcast"
+        data, addr = b.recvfrom(8096)
+        print "Received broadcast"
+        b.sendto(self.HOST, addr)
+        print "Send response"
+
 
     def poll(self,sock):
         '''
