@@ -93,7 +93,7 @@ class SolarCarConnector:
     """
     def __init__(self, ipaddr='192.168.1.110'):
         #global thread
-        #selectIPAddress() 
+        #selectIPAddress()
         self.HOST=socket.gethostbyname(socket.gethostname())
         self.starttime=datetime.datetime.now().strftime('%m_%d_(%H.%M')
         try:
@@ -136,8 +136,6 @@ class SolarCarConnector:
         self.keepthreading = True
         print 'IP Address: '+str(self.HOST)
         print 'starting serv'
-        print 'please run SimData'
-        print 'startserv running from graphs.py'
         self.s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         try:
             self.s.bind((self.HOST, self.PORT))
@@ -163,15 +161,27 @@ class SolarCarConnector:
         pass
 
     def broadcastIP(self, *args):
-
+        print "Starting broadcast"
         b = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         b.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-        b.bind(('', 9999))
-        print "Waiting to receive broadcast"
-        data, addr = b.recvfrom(8096)
-        print "Received broadcast"
-        b.sendto(self.HOST, addr)
-        print "Send response"
+        try:
+            b.bind(('', 9999))
+        except socket.error, msg:
+            if (msg[0]==10048):
+                print "Already binded"
+            print "Broadcast binding failed"
+            return
+        b.settimeout(10)
+        while(self.connected==False):
+            print "Waiting to receive broadcast"
+            try:
+                data, addr = b.recvfrom(8096)
+                print "Received broadcast from "+addr[0]
+                b.sendto(self.HOST, addr)
+                print "Sent response"
+            except socket.error:
+                print "Timed out"
+        print "Broadcast closed; already connected"
 
 
     def poll(self,sock):
