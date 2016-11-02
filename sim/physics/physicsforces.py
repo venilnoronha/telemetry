@@ -27,13 +27,13 @@ class OutsideForceModel:
 		Wf = rollc * Nf
 		return Wf
 		
-	def DragForce(airdensity, velocity, dragc, surfacearea):
+	def DragForce(airdensity, velocity, airvelocity, dragc, surfacearea):
 		'''
 		airdensity shall be in unit kg/m3
 		dragc is drag coefficient, it depends on the shape of the 
-		object and on the Reynolds number
+		car and on the Reynolds number
 		'''
-		Df = 0.5*airdensity*velocity*velocity*dragc*surfacearea
+		Df = 0.5*airdensity*(velocity+airvelocity)*(velocity+airvelocity)*dragc*surfacearea
 		return Df
 		
 		

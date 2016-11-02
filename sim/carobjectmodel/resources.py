@@ -55,7 +55,11 @@ class ResourcePool:
         self.velocityms = CarResource('Velocity', 'm/s', 0)
         self.solarOutput = CarResource('Solar Output', 'W(dc)', 0)
         self.batteryConnection = CarResource('Battery Connection','', 0)#some regulations require you to remove your battery at a certain time.
-        return
+        #all parameters below subject to change after real measurements
+		self.mass = CarResource('Mass','kg',500)
+		self.tyrePressure = CarResource('Tyre Pressure','bar',0.5)
+		self.surfaceareaTowind = CarResource('Surface Area to Wind','m*m',10)
+		return
 
     def recordResources(self, elapsedtime):
         '''
@@ -65,4 +69,8 @@ class ResourcePool:
         self.velocityms.recordHist(elapsedtime)
         self.solarOutput.recordHist(elapsedtime)
         self.batteryConnection.recordHist(elapsedtime)
-
+		#all parameters subject to change after real measurements
+		self.mass.recordHist(elapsedtime)
+		self.tyrePressure.recordHist(elapsedtime)
+		self.surfaceareaTowind.recordHist(elapsedtime)
+		return
