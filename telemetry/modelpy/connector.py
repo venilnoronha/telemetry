@@ -7,6 +7,7 @@ import Tkinter as tk
 from Tkinter import *
 import datetime
 
+import kivy.uix.popup
 from kivy.clock import Clock
 
 from telemetry.modelpy import model
@@ -19,6 +20,9 @@ def selectIPAddress():
         popup.destroy()
     ipaddresses= [ip for ip in socket.gethostbyname_ex(socket.gethostname())][2]
     NORM_FONT= ("Verdana", 10)
+    #popup = Popup(title="Select IPHost Address",
+    #              content=Label(text="Select IPHost Address"),
+    #             size_hint=(None, None), size=(300, 180))
     popup = tk.Tk()
     popup.wm_title("Select IPHost Address")
     h=180
