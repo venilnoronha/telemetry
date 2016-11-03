@@ -16,7 +16,7 @@ class SimMainScreen(BoxLayout):
         super (SimMainScreen, self).__init__(orientation='vertical')
         self.parentapp = parentapp
 
-        welcometext = Label(text='Solar Car Strategy Simluation',size_hint=(1, .3),font_size=70)
+        welcometext = Label(text='Solar Car Strategy Simluation', size_hint=(1, .3),font_size=70, )
 
         self.add_widget(welcometext)
 
@@ -26,11 +26,11 @@ class SimMainScreen(BoxLayout):
         pass
 
     def buildChoices(self):
-        choices = BoxLayout(orientation='horizontal')
+        choices = BoxLayout(orientation='vertical')
         choices.padding=50
         choices.spacing=20
 
-        simmenu = self.buildSimuMenu()
+        simmenu = self.buildSimuMenu
         choices.add_widget(simmenu)
 
         anamenu = self.buildAnaMenu()
@@ -55,6 +55,7 @@ class SimMainScreen(BoxLayout):
 
         return choices
 
+    @property
     def buildSimuMenu(self):
         choices = BoxLayout(orientation='vertical')
 
@@ -64,8 +65,8 @@ class SimMainScreen(BoxLayout):
 
         strategysection = BoxLayout(orientation='horizontal')
 
-        selectedlabel = Label(text='Selected Strategy:')
-        strategysection.add_widget(selectedlabel)
+        #selectedlabel = Label(text='Selected Strategy:')
+        #strategysection.add_widget(selectedlabel)
 
         loadbutton = Button(text='Edit...')
         loadbutton.bind(on_press=self.loadbuttoncallback)
