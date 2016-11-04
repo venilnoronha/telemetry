@@ -18,9 +18,9 @@ class GraphView(BoxLayout):
         self.tempUnitConfig = GraphUnitConfig()
         self.voltUnitConfig = GraphUnitConfig()
         self.rpmUnitConfig = GraphUnitConfig()
-        self.tempUnitConfig.deserializeConfig('config/TemperatureGraphUnit.cfg')
-        self.voltUnitConfig.deserializeConfig('config/VoltageGraphUnit.cfg')
-        self.rpmUnitConfig.deserializeConfig('config/RPMGraphUnit.cfg')
+        self.tempUnitConfig.deserializeConfig('../config/TemperatureGraphUnit.cfg')
+        self.voltUnitConfig.deserializeConfig('../config/VoltageGraphUnit.cfg')
+        self.rpmUnitConfig.deserializeConfig('../config/RPMGraphUnit.cfg')
 
         self.temperaturePlot = SingleUnitPlot(datalist["cabintemp"], colorlist["Cabin Temp"], self.tempUnitConfig)
         #datalist["cabintemp"].setIsSelected(True)
