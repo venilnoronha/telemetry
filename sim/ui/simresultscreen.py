@@ -3,6 +3,7 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from graphlib import Graph, MeshLinePlot
 import files.datadump
+import os
 
 class SimResultScreen(BoxLayout):
     def __init__(self, parentapp, simobj):
@@ -33,8 +34,12 @@ class SimResultScreen(BoxLayout):
 
     def dumpcallback(self, instance):
         #should refactor this into simobj.writeoutput or something. UI shouldn't really contain datadumping code, just call into it.
+
+        if not os.path.isdir('outputData'):
+            os.mkdir('outputData')
+
         data = files.datadump.getCSVData(self.simobj.carmodel.respool)
-        files.datadump.dumpdata('outputdata/testdump.csv', data)
+        files.datadump.dumpdata('outputData/testdump.csv', data)
 
 
 class SimUnitPlot(Graph):
