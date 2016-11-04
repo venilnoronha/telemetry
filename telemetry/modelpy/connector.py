@@ -7,7 +7,7 @@ import Tkinter as tk
 from Tkinter import *
 import datetime
 
-import kivy.uix.popup
+from kivy.uix.popup import Popup
 from kivy.clock import Clock
 
 from telemetry.modelpy import model
@@ -15,31 +15,29 @@ from files.telemetrydatadump import datadump
 
 
 def selectIPAddress():
-    def saveValue(self):
-        SolarCarConnector.HOST=ipOptions.get()
-        popup.destroy()
-    ipaddresses= [ip for ip in socket.gethostbyname_ex(socket.gethostname())][2]
-    NORM_FONT= ("Verdana", 10)
-    #popup = Popup(title="Select IPHost Address",
-    #              content=Label(text="Select IPHost Address"),
-    #             size_hint=(None, None), size=(300, 180))
-    popup = tk.Tk()
-    popup.wm_title("Select IPHost Address")
-    h=180
-    w=300
-    popup.geometry('%dx%d+600+250' % (w, h))
-    label = Label(popup, text="Please select the IP address to host from", font=NORM_FONT, wraplength= 260)
-    label.pack(side="top", fill="x", pady=10, padx=20)
-    ipOptions = StringVar(popup)
-    ipOptions.set(ipaddresses[0])
-    dropdown = apply(OptionMenu, (popup, ipOptions) + tuple(ipaddresses))
-    dropdown.pack()
-    buttonframe= Frame(popup,width=popup.winfo_reqwidth())
-    B1 = Button(buttonframe, text="Okay", width=10, command = lambda: saveValue(popup))
-    B1.grid(row=0, column=0, pady=20)
-    buttonframe.pack()
+    #    SolarCarConnector.HOST=ipOptions.get()
+    #    popup.destroy()
+    #ipaddresses= [ip for ip in socket.gethostbyname_ex(socket.gethostname())][2]
+    #NORM_FONT= ("Verdana", 10)
+    popup = Popup(title='Select IPHost Address', content=Label(text='Select IPHost Address'), size=(300, 180))
+    popup.open()
+    #popup = tk.Tk()
+    #popup.wm_title("Select IPHost Address")
+    #h=180
+    #w=300
+    #popup.geometry('%dx%d+600+250' % (w, h))
+    #label = Label(popup, text="Please select the IP address to host from", font=NORM_FONT, wraplength= 260)
+    #label.pack(side="top", fill="x", pady=10, padx=20)
+    #ipOptions = StringVar(popup)
+    #ipOptions.set(ipaddresses[0])
+    #dropdown = apply(OptionMenu, (popup, ipOptions) + tuple(ipaddresses))
+    #dropdown.pack()
+    #buttonframe= Frame(popup,width=popup.winfo_reqwidth())
+    #B1 = Button(buttonframe, text="Okay", width=10, command = lambda: saveValue(popup))
+    #B1.grid(row=0, column=0, pady=20)
+    #buttonframe.pack()
 
-    popup.mainloop()
+    #popup.mainloop()
 
 def saveDataDialogBox(msg):
     def saveValues(input):
