@@ -7,7 +7,9 @@ import Tkinter as tk
 from Tkinter import *
 import datetime
 
+from kivy.app import App
 from kivy.uix.popup import Popup
+from kivy.uix.label import Label
 from kivy.clock import Clock
 
 from telemetry.modelpy import model
@@ -19,7 +21,11 @@ def selectIPAddress():
     #    popup.destroy()
     #ipaddresses= [ip for ip in socket.gethostbyname_ex(socket.gethostname())][2]
     #NORM_FONT= ("Verdana", 10)
-    popup = Popup(title='Select IPHost Address', content=Label(text='Select IPHost Address'), size=(300, 180))
+
+    popup = Popup(title='Select IPHost Address',
+                  content=Label(text='Select IPHost Address'),
+                  size_hint=(None, None),
+                  size=(300, 180))
     popup.open()
     #popup = tk.Tk()
     #popup.wm_title("Select IPHost Address")
@@ -95,7 +101,7 @@ class SolarCarConnector:
     """
     def __init__(self, ipaddr='192.168.1.110'):
         #global thread
-        #selectIPAddress()
+        selectIPAddress()
         self.HOST=socket.gethostbyname(socket.gethostname())
         self.starttime=datetime.datetime.now().strftime('%m_%d_(%H.%M')
         try:
