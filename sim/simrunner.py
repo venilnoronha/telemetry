@@ -19,14 +19,18 @@ class MyApp(App):
         global connect
         self.mainview = BoxLayout(orientation='horizontal')
 
-        startscreen = SimMainScreen(self)
-        self.mainview.add_widget(startscreen)
+        self.startscreen = SimMainScreen(self)
+        self.mainview.add_widget(self.startscreen)
 
 
         return self.mainview
 
     def on_stop(self):
         return
+
+    def showStartScreen(self):
+        self.mainview.clear_widgets()
+        self.mainview.add_widget(self.startscreen)
 
     def showResult(self, simobj):
         self.mainview.clear_widgets()

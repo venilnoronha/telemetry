@@ -16,11 +16,10 @@ class SimResultScreen(BoxLayout):
 
         bottombar = BoxLayout(orientation='horizontal',size_hint=(1.0,0.1))
         datadumpbutton = Button(text='Save Result...')
-
-
         datadumpbutton.bind(on_press=self.dumpcallback)
-        seeparameter = Button(text='Edit Strategy...')
-        bottombar.add_widget(seeparameter)
+        backbutton = Button(text='Back')
+        backbutton.bind(on_press=self.backcallback)
+        bottombar.add_widget(backbutton)
         bottombar.add_widget(datadumpbutton)
         self.add_widget(bottombar)
 
@@ -32,6 +31,9 @@ class SimResultScreen(BoxLayout):
         v = respool.velocityms
         gv = SimUnitPlot('velocity', v)
         return g
+
+    def backcallback(self, instance):
+        self.parentapp.showStartScreen()
 
     def dumpcallback(self, instance):
         #should refactor this into simobj.writeoutput or something. UI shouldn't really contain datadumping code, just call into it.
