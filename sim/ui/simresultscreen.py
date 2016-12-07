@@ -5,6 +5,7 @@ from graphlib import Graph, MeshLinePlot
 from os.path import dirname, abspath
 import files.datadump
 import os
+from kivy.uix.slider import Slider
 
 class SimResultScreen(BoxLayout):
     def __init__(self, parentapp, simobj):
@@ -12,7 +13,10 @@ class SimResultScreen(BoxLayout):
         self.parentapp = parentapp
         self.simobj = simobj
         graphmodule = self.getGraphModule(simobj)
+        slider = Slider(orientation='horizontal', min=-100, max=100, value=0, size_hint=(1, .1))
+
         self.add_widget(graphmodule)
+        self.add_widget(slider)
 
         bottombar = BoxLayout(orientation='horizontal',size_hint=(1.0,0.1))
         datadumpbutton = Button(text='Save Result...')
@@ -57,7 +61,8 @@ class SimUnitPlot(Graph):
         Graph.__init__(self,
         x_ticks_major=60*60*60*24, y_ticks_major=500000,
         y_grid_label=True, x_grid_label=True, padding=5,
-        x_grid=True, y_grid=True, xmin=bounds[0], xmax=bounds[1], ymin=bounds[2], ymax=bounds[3])
+        x_grid=True, y_grid=True, xmin=bounds[0], xmax=bounds[1], ymin=bounds[2], ymax=bounds[3],
+                       width=2000, height=500)
         self.unittype='test'
         tempplotdata = solarres.hist
 
