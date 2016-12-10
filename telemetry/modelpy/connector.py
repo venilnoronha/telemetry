@@ -13,7 +13,7 @@ from kivy.uix.label import Label
 from kivy.clock import Clock
 
 from telemetry.modelpy import model
-from files.telemetrydatadump import datadump
+
 
 
 def selectIPAddress():
@@ -85,7 +85,7 @@ class SolarCarConnector:
     TIMEOUT=15
     SAMPLESPEED_S=0.02
     str=""
-    dump=datadump()
+
     updateCount=0
     UPDATE_COUNT_MODULUS=20
     starttime=''
@@ -121,14 +121,6 @@ class SolarCarConnector:
 
     def close(self):
         #saveDataDialogBox("Would you like to save the collected data as a .json and/or .csv file?")
-        if(self.saveData==True):
-            self.endtime=datetime.datetime.now().strftime('%H.%M)')
-            fileName1=self.starttime+'-'+self.endtime+'.json'
-            fileName2=self.starttime+'-'+self.endtime+'.csv'
-            if(self.saveJSON):
-                self.dump.exportJSON(fileName1)
-            if(self.saveCSV):
-                self.dump.exportCSV(fileName2)
         self.keepthreading=False
         self.connected=False
         self.s.close()

@@ -9,9 +9,11 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
 from kivy.uix.image import Image
 from kivy.clock import Clock
+from kivy.uix.button import Button
 from telemetry.scscui.quickview import Quickview
 from telemetry.scscui.graphs import GraphView
 from telemetry.modelpy.connector import SolarCarConnector
+from files.telemetrydatadump import datadump
 import sys
 
 """
@@ -54,7 +56,14 @@ class MyApp(App):
         tp.do_default_tab=False
 
         th1=TabbedPanelHeader(text= 'Graphs')
-        th1.content = graphviewpanel
+        outerpanel = BoxLayout(orientation='horizontal')
+        outerpanel.add_widget(graphviewpanel)
+        buttonspanel = BoxLayout(orientation='vertical',size_hint=(.2,.1))
+        savebutton = Button(text='save data')
+        savebutton.bind(on_press=self.dump)
+        buttonspanel.add_widget(savebutton)
+        outerpanel.add_widget(buttonspanel)
+        th1.content = outerpanel
         tp.add_widget(th1)
 
         th2=TabbedPanelHeader(text='Analytics')
@@ -86,13 +95,16 @@ class MyApp(App):
         '''****************************************************************************************************'''
 
         self.connecticon=Image(source="../img/disconnected.png",size_hint=(.05, .04),pos_hint={'x':.94, 'y':.94})
-
         self.masterlayout.add_widget(mainview)
         self.masterlayout.add_widget(self.connecticon)
         self.connector= SolarCarConnector()
         self.updateEvent=Clock.schedule_interval(self.update, 1/5)
-
         return self.masterlayout
+
+    def dump(self, args):
+        d = datadump()
+        fileName = 'testtelemetrydump.csv'
+        d.exportCSV(fileName)
 
     def on_stop(self):
         Clock.unschedule(self.updateEvent)
