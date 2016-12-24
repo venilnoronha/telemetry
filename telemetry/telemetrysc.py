@@ -14,6 +14,9 @@ from telemetry.scscui.quickview import Quickview
 from telemetry.scscui.graphs import GraphView
 from telemetry.modelpy.connector import SolarCarConnector
 from files.telemetrydatadump import datadump
+from kivy.uix.dropdown import DropDown
+from kivy.uix.popup import Popup
+from kivy.uix.textinput import TextInput
 import sys
 
 """
@@ -93,13 +96,66 @@ class MyApp(App):
         mainview.add_widget(tp)
 
         '''****************************************************************************************************'''
+        self.connectbutton = Button(size_hint=(.15, .05),pos_hint={'x': .88, 'y': .93})
+        self.connecticon=Image(source="../img/disconnected.png", size_hint=(.05, .04),pos_hint={'x': .94, 'y': .94})
+        self.condropdown = DropDown()
 
-        self.connecticon=Image(source="../img/disconnected.png",size_hint=(.05, .04),pos_hint={'x':.94, 'y':.94})
+        autobut = Button(text='Automatic', size_hint_y=None, height=44)
+        autobut.bind(on_press=self.autoLookIP)
+        custombut = Button(text='Custom IP...', size_hint_y=None, height=44)
+        custombut.bind(on_press=self.makecustomIPPop)
+        self.condropdown.add_widget(autobut)
+        self.condropdown.add_widget(custombut)
+        self.condropdown.bind(on_select=lambda instance, x: setattr(self.connectbutton, 'text', x))
+        self.connectbutton.bind(on_release=self.condropdown.open)
+
+
         self.masterlayout.add_widget(mainview)
+        self.masterlayout.add_widget(self.connectbutton)
         self.masterlayout.add_widget(self.connecticon)
         self.connector= SolarCarConnector()
         self.updateEvent=Clock.schedule_interval(self.update, 1/5)
         return self.masterlayout
+
+
+    def autoLookIP(self, arg):
+        #yutong do ur magic here
+        self.condropdown.dismiss()
+        return
+
+    def connectIP(self, ip):
+        #yutong do ur magic here
+        print('got ip %s' % ip)
+        return
+
+    def makecustomIPPop(self, arg):
+        layout = BoxLayout(orientation='horizontal')
+
+
+
+        input = TextInput(text='271.0.0.1', size_hint=(.8,1))
+        button = Button(text='Connect', size_hint=(.2, 1))
+
+        layout.add_widget(input)
+        layout.add_widget(button)
+
+        popup = Popup(title='connect to custom IP', content=layout, auto_dismiss=False,
+                      size_hint=(.4,.2))
+
+        # defint a function within a function because i didn't want to keep making global funcs
+        def connectlocal(arg):
+            ip = input.text
+            self.connectIP(ip)
+            popup.dismiss()
+            return
+
+        button.bind(on_press=connectlocal)
+        popup.open()
+
+        self.condropdown.dismiss()
+
+        return
+
 
     def dump(self, args):
         d = datadump()
