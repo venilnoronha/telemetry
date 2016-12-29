@@ -13,11 +13,12 @@ from kivy.uix.button import Button
 from telemetry.scscui.quickview import Quickview
 from telemetry.scscui.graphs import GraphView
 from telemetry.modelpy.connector import SolarCarConnector
-from files.telemetrydatadump import datadump
 from kivy.uix.dropdown import DropDown
 from kivy.uix.popup import Popup
 from kivy.uix.textinput import TextInput
 import sys
+import socket
+import time
 
 """
 main entry point to our program.
@@ -34,9 +35,9 @@ class MyApp(App):
         if(self.prevConnectionVal != isConnected):
             self.masterlayout.remove_widget(self.connecticon)
             if self.connector.connected:
-                self.connecticon=Image(source="img/connected.png",size_hint=(.05, .04),pos_hint={'x':.94, 'y':.94})
+                self.connecticon=Image(source="img/connected.png",size_hint=(.05, .04),pos_hint={'x': .9, 'y': .93})
             else:
-                self.connecticon=Image(source="img/disconnected.png",size_hint=(.05, .04),pos_hint={'x':.94, 'y':.94})
+                self.connecticon=Image(source="img/disconnected.png",size_hint=(.05, .04),pos_hint={'x': .9, 'y': .93})
             self.masterlayout.add_widget(self.connecticon)
             self.prevConnectionVal=isConnected
         pass
@@ -63,7 +64,7 @@ class MyApp(App):
         outerpanel.add_widget(graphviewpanel)
         buttonspanel = BoxLayout(orientation='vertical',size_hint=(.2,.1))
         savebutton = Button(text='save data')
-        savebutton.bind(on_press=self.dump)
+        savebutton.bind(on_press=self.promptDumpNamePopup)
         buttonspanel.add_widget(savebutton)
         outerpanel.add_widget(buttonspanel)
         th1.content = outerpanel
@@ -96,8 +97,8 @@ class MyApp(App):
         mainview.add_widget(tp)
 
         '''****************************************************************************************************'''
-        self.connectbutton = Button(size_hint=(.15, .05),pos_hint={'x': .88, 'y': .93})
-        self.connecticon=Image(source="../img/disconnected.png", size_hint=(.05, .04),pos_hint={'x': .94, 'y': .94})
+        self.connectbutton = Button(size_hint=(.15, .07),pos_hint={'x': .85, 'y': .91})
+        self.connecticon=Image(source="../img/disconnected.png", size_hint=(.05, .04),pos_hint={'x': .9, 'y': .93})
         self.condropdown = DropDown()
 
         autobut = Button(text='Automatic', size_hint_y=None, height=44)
@@ -113,7 +114,7 @@ class MyApp(App):
         self.masterlayout.add_widget(mainview)
         self.masterlayout.add_widget(self.connectbutton)
         self.masterlayout.add_widget(self.connecticon)
-        self.connector= SolarCarConnector()
+        self.connector= SolarCarConnector(socket.gethostbyname(socket.gethostname()))
         self.updateEvent=Clock.schedule_interval(self.update, 1/5)
         return self.masterlayout
 
@@ -121,46 +122,104 @@ class MyApp(App):
     def autoLookIP(self, arg):
         #yutong do ur magic here
         self.condropdown.dismiss()
+        ip = socket.gethostbyname(socket.gethostname())
+        print "Restarting connector"
+        self.connector.close()
+        time.sleep(1)
+        print('Connector restarted with ip %s' % ip)
+        self.connector.__init__(ip)
         return
 
     def connectIP(self, ip):
         #yutong do ur magic here
         print('got ip %s' % ip)
+        print "Restarting connector"
+        self.connector.close()
+        time.sleep(1)
+        print('Connector restarted with ip %s' % ip)
+        self.connector.__init__(ip)
+
         return
 
     def makecustomIPPop(self, arg):
         layout = BoxLayout(orientation='horizontal')
+        ipaddresses= [ip for ip in socket.gethostbyname_ex(socket.gethostname())][2]
+        dropdown=Button(text= self.connector.HOST, size_hint=(.6,1))
+        dropdown2 = DropDown()
 
+        def click(self):
+            dropdown.text= self.text
+            dropdown2.dismiss()
 
+        for ip in ipaddresses:
+            print "adding button "+ip
+            btn=Button(text=ip, size_hint_y=None, height=44)
+            btn.bind(on_release=click)
+            dropdown2.add_widget(btn)
 
-        input = TextInput(text='271.0.0.1', size_hint=(.8,1))
+        dropdown2.bind(on_select=lambda instance, x: setattr(dropdown, 'text', x))
+        dropdown.bind(on_release=dropdown2.open)
+
         button = Button(text='Connect', size_hint=(.2, 1))
+        buttonCancel = Button(text='Cancel', size_hint=(.2, 1))
 
-        layout.add_widget(input)
+        layout.add_widget(dropdown)
         layout.add_widget(button)
+        layout.add_widget(buttonCancel)
 
-        popup = Popup(title='connect to custom IP', content=layout, auto_dismiss=False,
+        popup = Popup(title='Connect to custom IP', content=layout, auto_dismiss=False,
                       size_hint=(.4,.2))
 
         # defint a function within a function because i didn't want to keep making global funcs
         def connectlocal(arg):
-            ip = input.text
+            ip = dropdown.text
             self.connectIP(ip)
             popup.dismiss()
             return
 
+        def close(arg):
+            popup.dismiss()
+            return
+
         button.bind(on_press=connectlocal)
+        buttonCancel.bind(on_press=close)
         popup.open()
 
         self.condropdown.dismiss()
 
         return
 
+    def promptDumpNamePopup(self, arg):
+        layout = BoxLayout(orientation='horizontal')
 
-    def dump(self, args):
-        d = datadump()
-        fileName = 'testtelemetrydump.csv'
-        d.exportCSV(fileName)
+        input = TextInput(text='texttelemetrydump', size_hint=(.6,1))
+        button = Button(text='Save', size_hint=(.2, 1))
+        buttonCancel = Button(text='Cancel', size_hint=(.2, 1))
+
+        layout.add_widget(input)
+        layout.add_widget(button)
+        layout.add_widget(buttonCancel)
+
+        popup = Popup(title='Save Data', content=layout, auto_dismiss=False,
+                      size_hint=(.4,.2))
+
+        # defint a function within a function because i didn't want to keep making global funcs
+        def dump(arg):
+            d = self.connector.dump
+            fileName = input.text
+            d.exportCSV(fileName)
+            popup.dismiss()
+            return
+
+        def close(arg):
+            popup.dismiss()
+            return
+
+        button.bind(on_press=dump)
+        buttonCancel.bind(on_press=close)
+        popup.open()
+
+        return
 
     def on_stop(self):
         Clock.unschedule(self.updateEvent)
