@@ -13,10 +13,11 @@ class SimResultScreen(BoxLayout):
         self.parentapp = parentapp
         self.simobj = simobj
         graphmodule = self.getGraphModule(simobj)
-        slider = Slider(orientation='horizontal', min=-100, max=100, value=0, size_hint=(1, .1))
+        self.zoomslider = Slider(orientation='horizontal', min=-100, max=100, value=0, size_hint=(1, .1))
+        self.zoomslider.bind(value=self.onZoomSliderChange)
 
         self.add_widget(graphmodule)
-        self.add_widget(slider)
+        self.add_widget(self.zoomslider)
 
         bottombar = BoxLayout(orientation='horizontal',size_hint=(1.0,0.1))
         datadumpbutton = Button(text='Save Result...')
@@ -50,6 +51,9 @@ class SimResultScreen(BoxLayout):
         data = files.datadump.getCSVData(self.simobj.carmodel.respool)
         files.datadump.dumpdata(os.path.join(targetDirectory, 'testdump.csv'), data)
 
+    def onZoomSliderChange(self, instance, value):
+        print('my value changed to %s' % value)
+        return;
 
 
 class SimUnitPlot(Graph):
