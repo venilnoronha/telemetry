@@ -16,6 +16,7 @@ from telemetry.modelpy import model
 from files.telemetrydatadump import datadump
 
 
+
 def selectIPAddress():
     #    SolarCarConnector.HOST=ipOptions.get()
     #    popup.destroy()
@@ -85,7 +86,7 @@ class SolarCarConnector:
     TIMEOUT=15
     SAMPLESPEED_S=0.02
     str=""
-    dump=datadump()
+
     updateCount=0
     UPDATE_COUNT_MODULUS=20
     starttime=''
@@ -95,14 +96,16 @@ class SolarCarConnector:
     saveJSON=False
     connected=False
     HOST=""
-
+    dump=datadump()
+    stopped=False
     """
     this class handles actually making a connection to the simulation or the actual microprocessor.
     """
     def __init__(self, ipaddr='192.168.1.110'):
         #global thread
-        selectIPAddress()
-        self.HOST=socket.gethostbyname(socket.gethostname())
+        #selectIPAddress()
+        self.stopped= False
+        self.HOST=ipaddr
         self.starttime=datetime.datetime.now().strftime('%m_%d_(%H.%M')
         try:
             #create an AF_INET, STREAM socket (TCP)
@@ -121,15 +124,12 @@ class SolarCarConnector:
 
     def close(self):
         #saveDataDialogBox("Would you like to save the collected data as a .json and/or .csv file?")
-        if(self.saveData==True):
-            self.endtime=datetime.datetime.now().strftime('%H.%M)')
-            fileName1=self.starttime+'-'+self.endtime+'.json'
-            fileName2=self.starttime+'-'+self.endtime+'.csv'
-            if(self.saveJSON):
-                self.dump.exportJSON(fileName1)
-            if(self.saveCSV):
-                self.dump.exportCSV(fileName2)
         self.keepthreading=False
+        self.message="stop"
+        print 'stopping'
+        while (self.stopped == False):
+            pass
+        print 'stopped'
         self.connected=False
         self.s.close()
 
@@ -165,22 +165,24 @@ class SolarCarConnector:
         self.connected=True
         self.readstringevent = Clock.schedule_interval(self.parseStringToModel, 1 / 10)
         self.poll(conn)
-
         pass
 
     def broadcastIP(self, *args):
         print "Starting broadcast"
         b = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        b.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+
         try:
-            b.bind(('', 9999))
+            b.bind((self.HOST,9999))
+            b.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, "eth0")
         except socket.error, msg:
             if (msg[0]==10048):
                 print "Already binded"
+            print msg
+            self.stopped=True
             print "Broadcast binding failed"
             return
-        b.settimeout(10)
-        while(self.connected==False):
+        b.settimeout(5)
+        while(self.connected==False and self.keepthreading == True):
             print "Waiting to receive broadcast"
             try:
                 data, addr = b.recvfrom(8096)
@@ -189,7 +191,12 @@ class SolarCarConnector:
                 print "Sent response"
             except socket.error:
                 print "Timed out"
-        print "Broadcast closed; already connected"
+        if(self.keepthreading == False):
+            print "Broadcast stopped"
+            self.stopped= True
+        else:
+            print "Broadcast closed; already connected"
+        b.close()
 
 
     def poll(self,sock):
@@ -198,6 +205,7 @@ class SolarCarConnector:
         should be called within thread in startserv
         :return:
         '''
+        print 'now polling'
         sock.settimeout(self.TIMEOUT)
         if(threading.active_count() > 5):
             print 'High number of threads found'
@@ -229,8 +237,8 @@ class SolarCarConnector:
                 break
             self.str=self.message.split(';')
             time.sleep(self.SAMPLESPEED_S)
-
-        #print("unscheduled")
+        self.stopped= True
+        print("Poll closed")
         pass
 
     def parseStringToModel(self, *args):

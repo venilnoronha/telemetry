@@ -13,7 +13,7 @@ class GraphView(BoxLayout):
     gobj2=object
     gobj3=object
     def __init__(self):
-        BoxLayout.__init__(self,orientation='vertical')
+        BoxLayout.__init__(self,orientation='vertical',size_hint=(.8,1))
         #blue
         self.tempUnitConfig = GraphUnitConfig()
         self.voltUnitConfig = GraphUnitConfig()
