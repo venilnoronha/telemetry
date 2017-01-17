@@ -16,7 +16,7 @@ class SimResultScreen(BoxLayout):
         self.parentapp = parentapp
         self.simobj = simobj
         self.graphmodule = self.getGraphModule(simobj)
-        self.zoomslider = Slider(orientation='horizontal', min=MINZOOM, max=MAXZOOM, value=1, size_hint=(1, .1))
+        self.zoomslider = Slider(step=1, orientation='horizontal', min=MINZOOM, max=MAXZOOM, size_hint=(1, .1))
         self.zoomslider.bind(value=self.onZoomSliderChange)
 
         self.add_widget(self.graphmodule)
