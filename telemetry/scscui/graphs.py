@@ -7,20 +7,23 @@ from telemetry.modelpy import datalist
 from telemetry.modelpy import colorlist
 from files.configs import GraphUnitConfig
 
+import os
 
 class GraphView(BoxLayout):
     temperaturePlot=object
     gobj2=object
     gobj3=object
+    parentdir = os.path.dirname(os.getcwd())
+
     def __init__(self):
-        BoxLayout.__init__(self,orientation='vertical',size_hint=(.8,1))
+        BoxLayout.__init__(self, orientation='vertical', size_hint=(.8,1))
         #blue
         self.tempUnitConfig = GraphUnitConfig()
         self.voltUnitConfig = GraphUnitConfig()
         self.rpmUnitConfig = GraphUnitConfig()
-        self.tempUnitConfig.deserializeConfig('../config/TemperatureGraphUnit.cfg')
-        self.voltUnitConfig.deserializeConfig('../config/VoltageGraphUnit.cfg')
-        self.rpmUnitConfig.deserializeConfig('../config/RPMGraphUnit.cfg')
+        self.tempUnitConfig.deserializeConfig(os.path.join(self.parentdir, 'config/TemperatureGraphUnit.cfg'))
+        self.voltUnitConfig.deserializeConfig(os.path.join(self.parentdir, 'config/VoltageGraphUnit.cfg'))
+        self.rpmUnitConfig.deserializeConfig(os.path.join(self.parentdir, 'config/RPMGraphUnit.cfg'))
 
         self.temperaturePlot = SingleUnitPlot(datalist["cabintemp"], colorlist["Cabin Temp"], self.tempUnitConfig)
         #datalist["cabintemp"].setIsSelected(True)
