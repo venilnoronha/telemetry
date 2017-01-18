@@ -18,6 +18,7 @@ class SimResultScreen(BoxLayout):
         self.graphmodule = self.getGraphModule(simobj)
         self.zoomslider = Slider(step=1, orientation='horizontal', min=MINZOOM, max=MAXZOOM, size_hint=(1, .1))
         self.zoomslider.bind(value=self.onZoomSliderChange)
+        self.zoomslider.bind(value=self.onZoomVerticalSliderChange)
 
         self.add_widget(self.graphmodule)
         self.add_widget(self.zoomslider)
@@ -58,6 +59,10 @@ class SimResultScreen(BoxLayout):
         self.graphmodule.setZoom(value)
         return;
 
+    def onZoomVerticalSliderChange(self, instance, value):
+        self.graphmodule.setZoomVertical(value)
+        return;
+
 
 class SimUnitPlot(Graph):
     minwidth = 10#seconds
@@ -95,4 +100,9 @@ class SimUnitPlot(Graph):
     def setZoom(self, scalef):
         #just a quick and dirty for now...well need to implement actual xmin/xmax windows and zooms onto middle?
         self.xmax = self.getDataMaxX() / float(scalef)
+        return
+
+    def setZoomVertical(self, scalef):
+        #just a quick and dirty for now...well need to implement actual xmin/xmax windows and zooms onto middle?
+        self.ymax = self.getDataMaxY() / float(scalef)
         return
